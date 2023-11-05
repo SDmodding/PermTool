@@ -76,6 +76,7 @@ struct MemoryEditor
         DataType_U32,           // unsigned int
         DataType_S64,           // long long / __int64
         DataType_U64,           // unsigned long long / unsigned __int64
+        DataType_PackedFloat,   // packed float
         DataType_HalfFloat,     // half float
         DataType_Float,         // float
         DataType_Double,        // double
@@ -529,7 +530,7 @@ struct MemoryEditor
         ImGui::AlignTextToFramePadding();
         ImGui::Text("Preview as:");
         ImGui::SameLine();
-        ImGui::SetNextItemWidth((s.GlyphWidth * 10.0f) + style.FramePadding.x * 2.0f + style.ItemInnerSpacing.x);
+        ImGui::SetNextItemWidth((s.GlyphWidth * 14.f) + style.FramePadding.x * 2.0f + style.ItemInnerSpacing.x);
         if (ImGui::BeginCombo("##combo_type", DataTypeGetDesc(PreviewDataType), ImGuiComboFlags_HeightLargest))
         {
             for (int n = 0; n < DataType_COUNT; n++)
@@ -559,14 +560,14 @@ struct MemoryEditor
     // Utilities for Data Preview
     const char* DataTypeGetDesc(ImGuiDataType data_type) const
     {
-        const char* descs[] = { "Int8", "Uint8", "Int16", "Uint16", "Int32", "Uint32", "Int64", "Uint64", "Half-Float", "Float", "Double" };
+        const char* descs[] = { "Int8", "Uint8", "Int16", "Uint16", "Int32", "Uint32", "Int64", "Uint64", "Packed-Float", "Half-Float", "Float", "Double" };
         IM_ASSERT(data_type >= 0 && data_type < DataType_COUNT);
         return descs[data_type];
     }
 
     size_t DataTypeGetSize(ImGuiDataType data_type) const
     {
-        const size_t sizes[] = { 1, 1, 2, 2, 4, 4, 8, 8, (sizeof(float) >> 1), sizeof(float), sizeof(double) };
+        const size_t sizes[] = { 1, 1, 2, 2, 4, 4, 8, 8, 1, (sizeof(float) >> 1), sizeof(float), sizeof(double) };
         IM_ASSERT(data_type >= 0 && data_type < DataType_COUNT);
         return sizes[data_type];
     }
@@ -728,6 +729,15 @@ struct MemoryEditor
             EndianessCopy(&uint64, buf, size);
             if (data_format == DataFormat_Dec) { ImSnprintf(out_buf, out_buf_size, "%llu", (long long)uint64); return; }
             if (data_format == DataFormat_Hex) { ImSnprintf(out_buf, out_buf_size, "0x%016llx", (long long)uint64); return; }
+            break;
+        }
+        case DataType_PackedFloat:
+        {
+            uint8_t m_PackedFloat;
+            EndianessCopy(&m_PackedFloat, buf, size);
+            float float32 = (static_cast<float>(m_PackedFloat) / 255.f) * 2.f - 1.f;
+            if (data_format == DataFormat_Dec) { ImSnprintf(out_buf, out_buf_size, "%f", float32); return; }
+            if (data_format == DataFormat_Hex) { ImSnprintf(out_buf, out_buf_size, "%a", float32); return; }
             break;
         }
         case DataType_HalfFloat:

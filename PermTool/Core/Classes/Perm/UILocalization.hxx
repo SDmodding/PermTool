@@ -9,17 +9,36 @@ public:
 
 	CUILocalization()
 	{
-		//m_HasTreeNodeItems = true;
         Dictionary::InitializeUILocalizationSymbols();
 	}
 
-    const char* GetKeyName(uint32_t p_Key)
+    static __inline const char* GetKeyName(uint32_t p_Key)
     {
         const char* m_Key = Dictionary::g_UILocalizationSymbols.Get(p_Key);
         if (!m_Key)
             m_Key = Format::Get("0x%08X", p_Key);
 
         return m_Key;
+    }
+
+    static bool SortByKey(std::pair<uint32_t, const char*>& p_PairA, std::pair<uint32_t, const char*>& p_PairB)
+    {
+        const char* m_KeyA = Dictionary::g_UILocalizationSymbols.Get(p_PairA.first);
+        const char* m_KeyB = Dictionary::g_UILocalizationSymbols.Get(p_PairB.first);
+
+        // Check if one/both key names are invalid and we got only hash value...
+        {
+            if (m_KeyA == nullptr && m_KeyB == nullptr)
+                return (p_PairB.first > p_PairA.first);
+
+            if (m_KeyA == nullptr)
+                return false;
+
+            if (m_KeyB == nullptr)
+                return true;
+        }
+
+        return (std::string(m_KeyB) > std::string(m_KeyA));
     }
 
     void OnDataLoad()
@@ -46,6 +65,8 @@ public:
             ++m_Index;
             m_StringOffset += (static_cast<uint32_t>(strlen(m_String)) + 1);
         }
+
+        std::sort(m_List.begin(), m_List.end(), SortByKey);
     }
 
     void UpdateLocalizationString(uint32_t p_Key, const char* p_NewValue)

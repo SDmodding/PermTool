@@ -114,28 +114,31 @@ namespace Render
             ImGui::EndMenuBar();
         }
 
-        // Shortcuts
-        std::pair<std::pair<ImGuiKey, ImGuiKey>, bool*> m_Shortcuts[] =
-        {
-            { { ImGuiKey_LeftCtrl, ImGuiKey_O }, &m_OpenFile },
-            { { ImGuiKey_LeftCtrl, ImGuiKey_S }, &m_SaveFile },
-        };
-        for (auto& m_Pair : m_Shortcuts)
-        {
-            ImGuiKey m_Key = m_Pair.first.second;
-            if (m_Key == ImGuiKey_None)
-                m_Key = m_Pair.first.first;
-            else if (!ImGui::IsKeyDown(m_Pair.first.first))
-                continue;
-
-            if (!ImGui::IsKeyPressed(m_Key, false))
-                continue;
-
-            *m_Pair.second = true;
-        }
-
         static const char* m_ErrorTitle = u8"\uF06A Error";
         static std::string m_ErrorStr;
+
+        // Shortcuts
+        if (ImGui::GetCurrentContext()->OpenPopupStack.empty())
+        {
+            std::pair<std::pair<ImGuiKey, ImGuiKey>, bool*> m_Shortcuts[] =
+            {
+                { { ImGuiKey_LeftCtrl, ImGuiKey_O }, &m_OpenFile },
+                { { ImGuiKey_LeftCtrl, ImGuiKey_S }, &m_SaveFile },
+            };
+            for (auto& m_Pair : m_Shortcuts)
+            {
+                ImGuiKey m_Key = m_Pair.first.second;
+                if (m_Key == ImGuiKey_None)
+                    m_Key = m_Pair.first.first;
+                else if (!ImGui::IsKeyDown(m_Pair.first.first))
+                    continue;
+
+                if (!ImGui::IsKeyPressed(m_Key, false))
+                    continue;
+
+                *m_Pair.second = true;
+            }
+        }
 
         // Options
         if (m_OpenFile)
