@@ -6,6 +6,15 @@
 //=============================================================================
 #pragma once
 
+struct PermSetNameUID_t
+{
+	uint32_t* m_Ptr = nullptr;
+	uint32_t m_Backup = 0;
+	bool m_Uppercase = false;
+	char m_Str[128] = { '\0' };
+};
+PermSetNameUID_t g_PermSetNameUID;
+
 class CPerm
 {
 public:
@@ -49,6 +58,68 @@ public:
 		return nullptr;
 	}
 
+	void RenderDefaultProperties()
+	{
+		CResourceData* m_ResourceData = GetResourceData();
+
+		if (ImGui::BeginPopup("##NameUIDSetName", ImGuiWindowFlags_MenuBar))
+		{
+			if (ImGui::BeginMenuBar())
+			{
+				ImGui::Text("NameUID (Set Name)");
+				ImGui::EndMenuBar();
+			}
+
+			bool m_Update = ImGui::Checkbox("Uppercase##NameUIDSetName", &g_PermSetNameUID.m_Uppercase);
+			ImGui::PushItemWidth(280.f);
+			if (ImGui::InputText("##NameUIDSetName_Str", g_PermSetNameUID.m_Str, sizeof(PermSetNameUID_t::m_Str)) || m_Update)
+			{
+				if (g_PermSetNameUID.m_Str[0] == '\0')
+					*g_PermSetNameUID.m_Ptr = UINT32_MAX;
+				else if (g_PermSetNameUID.m_Uppercase)
+					*g_PermSetNameUID.m_Ptr = SDK::StringHashUpper32(g_PermSetNameUID.m_Str);
+				else
+					*g_PermSetNameUID.m_Ptr = SDK::StringHash32(g_PermSetNameUID.m_Str);
+			}
+
+			if (ImGui::Button("Revert##NameUIDSetName", { -1.f, 0.f }))
+				*g_PermSetNameUID.m_Ptr = g_PermSetNameUID.m_Backup;
+
+			ImGui::EndPopup();
+		}
+
+		if (ImGui::CollapsingHeader(u8"\uF573 Entry Info", IMGUI_TREENODE_FLAGS))
+		{
+			ImGui::PushItemWidth(-80.f);
+			ImGui::InputInt("NameUID", reinterpret_cast<int*>(&m_ResourceData->m_NameUID), 1, 100, ImGuiInputTextFlags_CharsHexadecimal);
+
+			if (Core_ImGui_RightClickItemPopup("##NameUIDSetName"))
+			{
+				g_PermSetNameUID.m_Ptr = &m_ResourceData->m_NameUID;
+				g_PermSetNameUID.m_Backup = m_ResourceData->m_NameUID;
+				memset(g_PermSetNameUID.m_Str, 0, sizeof(PermSetNameUID_t::m_Str));
+				strncpy(g_PermSetNameUID.m_Str, m_ResourceData->m_DebugName, sizeof(PermSetNameUID_t::m_Str));
+			}
+
+			if (Core_ImGui_ToolTipHover())
+			{
+				ImGui::TextColored(ImVec4(1.f, 0.f, 0.f, 1.f), "WARNING: Modifying this value might be critical to the game and break some stuff if you don't know what you're doing!");
+				ImGui::Text("Each resource uses NameUID as identifier/reference, that means that some resource might have handle to this NameUID.");
+				ImGui::EndTooltip();
+			}
+
+			if (ImGui::InputText("Debug Name", m_ResourceData->m_DebugName, sizeof(CResourceData::m_DebugName)))
+			{
+				size_t m_NumChars = strlen(m_ResourceData->m_DebugName);
+				size_t m_SizeToZero = (sizeof(CResourceData::m_DebugName) - m_NumChars);
+				memset(&m_ResourceData->m_DebugName[m_NumChars], 0, m_SizeToZero);
+			}
+
+			ImGui::SetItemTooltip("You can change this to whatever you want it doesn't do anything.\nIt's mainly used for debugging purposes...");		
+			ImGui::PopItemWidth();
+		}
+	}
+
 	// Virtual Functions
 
 	virtual void OnDataLoad() { }
@@ -62,6 +133,7 @@ public:
 #include "Buffer.hxx"
 #include "Material.hxx"
 #include "ModelData.hxx"
+#include "Texture.hxx"
 #include "UILocalization.hxx"
 
 // Functions
@@ -79,6 +151,8 @@ namespace Perm
 			return new CMaterial;
 		case RESOURCE_TYPE_ModelData:
 			return new CModelData;
+		case RESOURCE_TYPE_Texture:
+			return new CTexture;
 		case RESOURCE_TYPE_UILocalization:
 			return new CUILocalization;
 		default:

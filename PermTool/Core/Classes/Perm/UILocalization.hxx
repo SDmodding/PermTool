@@ -21,7 +21,7 @@ public:
         return m_Key;
     }
 
-    static bool SortByKey(std::pair<uint32_t, const char*>& p_PairA, std::pair<uint32_t, const char*>& p_PairB)
+    static bool CompareKey(std::pair<uint32_t, const char*>& p_PairA, std::pair<uint32_t, const char*>& p_PairB)
     {
         const char* m_KeyA = Dictionary::g_UILocalizationSymbols.Get(p_PairA.first);
         const char* m_KeyB = Dictionary::g_UILocalizationSymbols.Get(p_PairB.first);
@@ -66,14 +66,12 @@ public:
             m_StringOffset += (static_cast<uint32_t>(strlen(m_String)) + 1);
         }
 
-        std::sort(m_List.begin(), m_List.end(), SortByKey);
+        std::sort(m_List.begin(), m_List.end(), CompareKey);
     }
 
     void UpdateLocalizationString(uint32_t p_Key, const char* p_NewValue)
     {
         UFG::UILocalization_t* m_UILocalization = reinterpret_cast<UFG::UILocalization_t*>(GetResourceData());
-        if (!m_UILocalization)
-            return;
 
         const char* p_Value = nullptr;
         for (auto& m_Pair : m_List)
@@ -145,59 +143,63 @@ public:
         }
     }
 
-	void RenderProperties()
-	{
-        if (ImGui::InputText("Search for Key##UILocalization", m_SearchKeyStr, sizeof(m_SearchKeyStr)))
-            UpdateSearch();
-
-        std::vector<std::pair<uint32_t, const char*>>& m_DisplayList = (m_SearchKeyStr[0] == '\0' ? m_List : m_SearchList);
-        if (ImGui::BeginTable("##UILocalizationTable", 2, ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable | ImGuiTableFlags_ScrollY, { 0.f, -1.f }))
+    void RenderProperties()
+    {
+        if (ImGui::CollapsingHeader(u8"\uE0BB Dictionary", IMGUI_TREENODE_OPEN_FLAGS))
         {
-            if (ImGui::BeginPopup("##UILocalizationEditValue", ImGuiWindowFlags_MenuBar))
+            ImGui::SetNextItemWidth(-110.f);
+            if (ImGui::InputText("Search for Key##UILocalization", m_SearchKeyStr, sizeof(m_SearchKeyStr)))
+                UpdateSearch();
+
+            std::vector<std::pair<uint32_t, const char*>>& m_DisplayList = (m_SearchKeyStr[0] == '\0' ? m_List : m_SearchList);
+            if (ImGui::BeginTable("##UILocalizationTable", 2, ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable | ImGuiTableFlags_ScrollY, { 0.f, -1.f }))
             {
-                if (ImGui::BeginMenuBar())
+                if (ImGui::BeginPopup("##UILocalizationEditValue", ImGuiWindowFlags_MenuBar))
                 {
-                    ImGui::Text("%s (Edit Value)\t", &LocalizationEditValue.m_Name[0]);
-                    ImGui::EndMenuBar();
+                    if (ImGui::BeginMenuBar())
+                    {
+                        ImGui::Text("%s (Edit Value)\t", &LocalizationEditValue.m_Name[0]);
+                        ImGui::EndMenuBar();
+                    }
+
+                    if (ImGui::InputTextMultiline("##UILocalizationEditValue_Str", LocalizationEditValue.m_Str, sizeof(LocalizationEditValue_t::m_Str), { -1.f, 50.f }))
+                    {
+                        UpdateLocalizationString(LocalizationEditValue.m_Key, LocalizationEditValue.m_Str);
+                        UpdateSearch();
+                    }
+
+                    ImGui::EndPopup();
                 }
 
-                if (ImGui::InputTextMultiline("##UILocalizationEditValue_Str", LocalizationEditValue.m_Str, sizeof(LocalizationEditValue_t::m_Str), { -1.f, 50.f }))
+                ImGui::TableSetupScrollFreeze(1, 1);
+                ImGui::TableSetupColumn("Key", ImGuiTableColumnFlags_WidthFixed, floorf(ImGui::GetContentRegionAvail().x * 0.35f));
+                ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthStretch);
+                ImGui::TableHeadersRow();
+
+                int m_HoveredRow = ImGui::TableGetHoveredRow();
+                if (m_HoveredRow && Core_ImGui_RightClickItemPopupNoHover("##UILocalizationEditValue"))
                 {
-                    UpdateLocalizationString(LocalizationEditValue.m_Key, LocalizationEditValue.m_Str);
-                    UpdateSearch();
+                    auto& m_Pair = m_DisplayList[m_HoveredRow - 1];
+                    LocalizationEditValue.m_Name = GetKeyName(m_Pair.first);
+                    LocalizationEditValue.m_Key = m_Pair.first;
+                    memset(LocalizationEditValue.m_Str, 0, sizeof(LocalizationEditValue_t::m_Str));
+                    strncpy(LocalizationEditValue.m_Str, m_Pair.second, sizeof(LocalizationEditValue_t::m_Str));
                 }
 
-                ImGui::EndPopup();
+                for (auto& m_Pair : m_DisplayList)
+                {
+                    ImGui::TableNextRow();
+                    ImGui::TableSetColumnIndex(0);
+                    ImGui::Text(GetKeyName(m_Pair.first));
+
+                    ImGui::TableSetColumnIndex(1);
+                    ImGui::PushTextWrapPos(0.f);
+                    ImGui::TextEx(m_Pair.second);
+                    ImGui::PopTextWrapPos();
+                }
+
+                ImGui::EndTable();
             }
-
-            ImGui::TableSetupScrollFreeze(1, 1);
-            ImGui::TableSetupColumn("Key", ImGuiTableColumnFlags_WidthFixed, floorf(ImGui::GetContentRegionAvail().x * 0.35f));
-            ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthStretch);
-            ImGui::TableHeadersRow();
-
-            int m_HoveredRow = ImGui::TableGetHoveredRow();
-            if (m_HoveredRow && Core_ImGui_RightClickItemPopupNoHover("##UILocalizationEditValue"))
-            {
-                auto& m_Pair = m_DisplayList[m_HoveredRow - 1];
-                LocalizationEditValue.m_Name = GetKeyName(m_Pair.first);
-                LocalizationEditValue.m_Key = m_Pair.first;
-                memset(LocalizationEditValue.m_Str, 0, sizeof(LocalizationEditValue_t::m_Str));
-                strncpy(LocalizationEditValue.m_Str, m_Pair.second, sizeof(LocalizationEditValue_t::m_Str));
-            }
-
-            for (auto& m_Pair : m_DisplayList)
-            {
-                ImGui::TableNextRow();
-                ImGui::TableSetColumnIndex(0);
-                ImGui::Text(GetKeyName(m_Pair.first));
-
-                ImGui::TableSetColumnIndex(1);
-                ImGui::PushTextWrapPos(0.f);
-                ImGui::TextEx(m_Pair.second);
-                ImGui::PopTextWrapPos();
-            }
-
-            ImGui::EndTable();
         }
-	}
+    }
 };

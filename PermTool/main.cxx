@@ -186,11 +186,33 @@ namespace Render
 
         ImGui::Begin(m_HexEditorTitle);
         {
+            static const char* m_WarningEditEntryTitle = u8"\uF071 Warning##HexEdit";
+            static bool m_WarningEditEntry_Showed = false;
             static MemoryEditor m_MemoryEdit;
             if (g_Core.m_PermSelected)
             {
                 m_MemoryEdit.OptMidColsCount = 0;
                 m_MemoryEdit.DrawContents(g_Core.m_PermSelected->m_DataPtr, g_Core.m_PermSelected->m_DataSize);
+                if (sizeof(UFG::ResourceEntry_t) > m_MemoryEdit.DataEditingAddr) // Prevent editing entry data...
+                {
+                    m_MemoryEdit.DataEditingAddr = MAXSIZE_T;
+                    if (!m_WarningEditEntry_Showed && (!m_MemoryEdit.OptShowDataPreview || ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)))
+                    {
+                        m_WarningEditEntry_Showed = true;
+                        ImGui::OpenPopup(m_WarningEditEntryTitle);
+                    }
+                }
+            }
+
+            ImGui::SetNextWindowSize({ 300.f, -1.f }, ImGuiCond_Always);
+            if (ImGui::BeginPopupModal(m_WarningEditEntryTitle, nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove))
+            {
+                ImGui::TextWrapped("You can't edit resource entry!");
+
+                if (ImGui::Button("OK", { -1.f, 0.f }))
+                    ImGui::CloseCurrentPopup();
+
+                ImGui::EndPopup();
             }
         }
         ImGui::End();
@@ -374,7 +396,7 @@ LRESULT WINAPI WndProc(HWND p_HWND, UINT p_Msg, WPARAM p_WParam, LPARAM p_LParam
     return DefWindowProcA(p_HWND, p_Msg, p_WParam, p_LParam);
 }
 
-const char* g_DebugPermFilePath = R"(C:\Program Files (x86)\Steam\steamapps\common\SleepingDogsDefinitiveEdition\Vehicles\Data\Vehicles_New\Heli01.perm.bin)";
+const char* g_DebugPermFilePath = R"(C:\Program Files (x86)\Steam\steamapps\common\SleepingDogsDefinitiveEdition\Vehicles\__Unknown\Heli01_TS001.perm.bin)";
 
 // Main
 int WINAPI WinMain(HINSTANCE p_Instance, HINSTANCE p_PrevInstance, char* p_CmdLine, int p_CmdShow)

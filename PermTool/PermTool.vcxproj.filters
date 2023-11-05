@@ -26,6 +26,9 @@
     <Filter Include="Project Files\Core\Classes\Perm\Dictionary">
       <UniqueIdentifier>{70cfcd80-2f3e-4765-aebb-7e1e01631251}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Project Files\Core\Symbols">
+      <UniqueIdentifier>{7e7f4ca1-ae61-458e-8db7-6884ab78cee9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cxx">
@@ -125,6 +128,15 @@
     </ClInclude>
     <ClInclude Include="Core\Classes\Perm\Dictionary\UILocalization.hxx">
       <Filter>Project Files\Core\Classes\Perm\Dictionary</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Classes\Perm\Texture.hxx">
+      <Filter>Project Files\Core\Classes\Perm</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Symbols\AlphaState.hxx">
+      <Filter>Project Files\Core\Symbols</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Symbols\RasterState.hxx">
+      <Filter>Project Files\Core\Symbols</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

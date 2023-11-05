@@ -10,19 +10,10 @@ CQSymbolMap g_MaterialParamSymbolMap = {{
 	"iAlphaState", "iRasterState", "iShader", "iTexture"
 }};
 
-// List for MaterialParam NameUID...
-std::unordered_map<uint32_t, std::vector<std::pair<uint32_t, const char*>>> g_MaterialParamNameList =
+std::unordered_map<uint32_t, CQSymbolMap*> g_MaterialParamNameMap =
 {
-	{ SDK::StringHash32("iRasterState"), {
-		{ UINT32_MAX, "Default" },
-		{ 0x20688F05, "Normal" },
-		{ 0x6EE1166A, "Disable Write" },
-		{ 0x0D91F916, "Invert Disable Write" },
-		{ 0xE68BB881, "Disable Depth Test" },
-		{ 0x940FB8EC, "Double Sided" },
-		{ 0x418CAF43, "Double Sided Alpha" },
-		{ 0xBC9FAF09, "Invert Culling" }
-	}}
+	{ SDK::StringHash32("iAlphaState"), &g_AlphaStateSymbolMap },
+	{ SDK::StringHash32("iRasterState"), &g_RasterStateSymbolMap }
 };
 
 struct MaterialParamAdd_t
@@ -131,10 +122,8 @@ public:
 	void RenderTreeNode()
 	{
 		Illusion::Material_t* m_Material = reinterpret_cast<Illusion::Material_t*>(GetResourceData());
-		if (!m_Material)
-			return;
 
-		if (ImGui::TreeNodeEx(Format::Get(u8"\uE253 Params##%u", m_Material->m_NameUID), IMGUI_TREENODE_FLAGS))
+		if (ImGui::TreeNodeEx(Format::Get(u8"\uE253 Params##%u", m_Material->m_NameUID), IMGUI_TREENODE_OPEN_FLAGS))
 		{
 			Illusion::MaterialParam_t* m_ParamTable = m_Material->GetTable();
 			for (uint32_t i = 0; m_Material->m_NumParams > i; ++i)
@@ -143,23 +132,16 @@ public:
 				const char* m_ParamStateName = g_MaterialParamSymbolMap.Get(m_Param->m_StateParam.m_NameUID, Format::Get("0x%X", m_Param->m_StateParam.m_NameUID));
 				const char* m_ParamName = nullptr;
 
-				auto m_Find = g_MaterialParamNameList.find(m_Param->m_StateParam.m_NameUID);
-				if (m_Find != g_MaterialParamNameList.end())
-				{
-					for (auto m_Pair : (*m_Find).second)
-					{
-						if (m_Pair.first == m_Param->m_NameUID)
-						{
-							m_ParamName = m_Pair.second;
-							break;
-						}
-					}
-				}
-				else if (m_Param->m_NameUID == UINT32_MAX)
+				if (m_Param->m_NameUID == UINT32_MAX)
 					m_ParamName = "Default";
-
-				if (!m_ParamName)
-					m_ParamName = Format::Get("0x%X", m_Param->m_NameUID);
+				else
+				{
+					auto m_Find = g_MaterialParamNameMap.find(m_Param->m_StateParam.m_NameUID);
+					if (m_Find != g_MaterialParamNameMap.end())
+						m_ParamName = (*m_Find).second->Get(m_Param->m_NameUID);
+					if (!m_ParamName)
+						m_ParamName = Format::Get("0x%X", m_Param->m_NameUID);
+				}
 
 				Core_ImGui_TextSuffix(m_ParamStateName, m_ParamName, 200.f);
 			}
@@ -173,7 +155,6 @@ public:
 		std::string m_Name;
 		Illusion::MaterialParam_t* m_Ptr = nullptr;
 		Illusion::MaterialParam_t m_Backup;
-		std::vector<std::pair<uint32_t, const char*>>* m_SelectList = nullptr;
 		bool m_Uppercase = false;
 		char m_Str[128];
 	};
@@ -196,8 +177,6 @@ public:
 	void RenderProperties()
 	{
 		Illusion::Material_t* m_Material = reinterpret_cast<Illusion::Material_t*>(GetResourceData());
-		if (!m_Material)
-			return;
 
 		if (ImGui::BeginPopup("##MaterialParamCtxItem", ImGuiWindowFlags_MenuBar))
 		{
@@ -207,11 +186,15 @@ public:
 				ImGui::EndMenuBar();
 			}
 
-			if (MaterialParamCtxItem.m_SelectList)
+			auto m_Find = g_MaterialParamNameMap.find(MaterialParamCtxItem.m_Ptr->m_StateParam.m_NameUID);
+			if (m_Find != g_MaterialParamNameMap.end())
 			{
+				auto m_ParamItems = (*m_Find).second->GetSortedVector();
+				m_ParamItems.insert(m_ParamItems.begin(), { UINT32_MAX, "Default" });
+
 				ImGui::SeparatorText("Select");
 				const char* m_Selected = nullptr;
-				for (auto m_Pair : *MaterialParamCtxItem.m_SelectList)
+				for (auto m_Pair : m_ParamItems)
 				{
 					if (m_Pair.first == MaterialParamCtxItem.m_Ptr->m_NameUID)
 					{
@@ -224,13 +207,11 @@ public:
 
 				if (ImGui::BeginCombo("##MaterialParamCtxItem_SelectList", m_Selected))
 				{
-					for (auto m_Pair : *MaterialParamCtxItem.m_SelectList)
+					for (auto m_Pair : m_ParamItems)
 					{
 						bool m_Selected = (m_Pair.first == MaterialParamCtxItem.m_Ptr->m_NameUID);
-						if (!ImGui::Selectable(m_Pair.second, &m_Selected))
-							continue;
-
-						MaterialParamCtxItem.m_Ptr->m_NameUID = m_Pair.first;
+						if (ImGui::Selectable(m_Pair.second, &m_Selected))
+							MaterialParamCtxItem.m_Ptr->m_NameUID = m_Pair.first;
 					}
 
 					ImGui::EndCombo();
@@ -279,13 +260,6 @@ public:
 					MaterialParamCtxItem.m_Name		= m_ParamStateName;
 					MaterialParamCtxItem.m_Ptr		= m_Param;
 					MaterialParamCtxItem.m_Backup	= *m_Param;
-
-					auto m_Find = g_MaterialParamNameList.find(m_Param->m_StateParam.m_NameUID);
-					if (m_Find == g_MaterialParamNameList.end())
-						MaterialParamCtxItem.m_SelectList = nullptr;
-					else
-						MaterialParamCtxItem.m_SelectList = &(*m_Find).second;
-
 					memset(MaterialParamCtxItem.m_Str, 0, sizeof(MaterialParamCtxItem_t::m_Str));
 				}
 			}

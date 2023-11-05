@@ -49,8 +49,6 @@ public:
 	void RenderTreeNode()
 	{
 		Illusion::ModelData_t* m_ModelData = reinterpret_cast<Illusion::ModelData_t*>(GetResourceData());
-		if (!m_ModelData)
-			return;
 
 		Core_ImGui_ResourceHandleSelectable(u8"\u0103 Bone Palette", m_ModelData->m_BonePaletteHandle.m_NameUID, m_ModelData->m_NameUID);
 		Core_ImGui_ResourceHandleSelectable(u8"\u0101 Material", m_ModelData->m_MaterialTableHandle.m_NameUID, m_ModelData->m_NameUID);
@@ -114,16 +112,12 @@ public:
 	void RenderProperties()
 	{
 		Illusion::ModelData_t* m_ModelData = reinterpret_cast<Illusion::ModelData_t*>(GetResourceData());
-		if (!m_ModelData)
-			return;
 
 		if (ImGui::CollapsingHeader(u8"\u0180 AABB", IMGUI_TREENODE_OPEN_FLAGS))
 		{
 			ImGui::SetItemTooltip("Changing AABB does mostly affect the model culling boundary box.");
 			ImGui::DragFloat3("Min", m_ModelData->m_AABBMin, 0.1f);
 			ImGui::DragFloat3("Max", m_ModelData->m_AABBMax, 0.1f);
-
-			ImGui::TreePop();
 		}
 	}
 };

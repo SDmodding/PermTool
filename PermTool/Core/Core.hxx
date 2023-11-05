@@ -24,9 +24,15 @@ void Core_ImGui_ResourceHandleSelectable(const char* p_Name, uint32_t p_NameUID,
 void Core_SelectResourceName(uint32_t p_NameUID);
 class CResourceData* Core_FindResourceByName(uint32_t p_NameUID);
 
-// Classes
+// Classes Important
 #include "Classes/QSymbolMap.hxx"
 #include "Classes/ResourceData.hxx"
+
+// Symbols
+#include "Symbols/AlphaState.hxx"
+#include "Symbols/RasterState.hxx"
+
+// Classes
 #include "Classes/Perm/.Perm.hxx"
 
 // Core
@@ -290,7 +296,10 @@ public:
         }
 
         if (m_PermSelected)
+        {
+            m_PermSelected->RenderDefaultProperties();
             m_PermSelected->RenderProperties();
+        }
     }
 };
 CCore g_Core;

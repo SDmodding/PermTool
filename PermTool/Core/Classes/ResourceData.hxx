@@ -166,7 +166,7 @@ static std::unordered_map<uint32_t, ResourceTypeInfo_t> g_ResourceTypeMap =
 	{ RESOURCE_TYPE_StateBlock,						{ "StateBlock",							u8"\u0100" }},
 	{ RESOURCE_TYPE_SymbolTableResource,			{ "SymbolTableResource",				u8"\u0100" }},
 	{ RESOURCE_TYPE_TerrainData,					{ "TerrainData",						u8"\u0100" }},
-	{ RESOURCE_TYPE_Texture,						{ "Texture",							u8"\u0100" }},
+	{ RESOURCE_TYPE_Texture,						{ "Texture",							u8"\u0105" }},
 	{ RESOURCE_TYPE_TextureD3DResource,				{ "TextureD3DResource",					u8"\u0100" }},
 	{ RESOURCE_TYPE_TrackStripSettings,				{ "TrackStripSettings",					u8"\u0100" }},
 	{ RESOURCE_TYPE_TrueCrowdDataBase,				{ "TrueCrowdDataBase",					u8"\u0100" }},

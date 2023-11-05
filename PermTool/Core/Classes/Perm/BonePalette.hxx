@@ -11,8 +11,6 @@ public:
 	void RenderTreeNode()
 	{
 		Illusion::BonePallete_t* m_BonePallete = reinterpret_cast<Illusion::BonePallete_t*>(GetResourceData());
-		if (!m_BonePallete)
-			return;
 
 		Core_ImGui_TextSuffix("Count", Format::Get("%u", m_BonePallete->m_NumBones));
 
