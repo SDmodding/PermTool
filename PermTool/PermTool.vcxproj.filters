@@ -1,0 +1,145 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Project Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Project Files\3rdParty">
+      <UniqueIdentifier>{0adf04b7-ea19-49fa-b13d-d9b96360120e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Project Files\3rdParty\ImGui">
+      <UniqueIdentifier>{a7a71f34-0897-41f9-8a55-503db446226f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{e0a2a07c-1247-467f-a74d-919ead5cb8ca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Project Files\Core">
+      <UniqueIdentifier>{adca4146-8b1b-4bf5-9407-bb310e8c7453}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Project Files\Core\Classes">
+      <UniqueIdentifier>{a5b5689d-adc6-4462-880a-6113e092e8f1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Project Files\Core\Classes\Perm">
+      <UniqueIdentifier>{c719b799-4e2e-45fc-9e1c-4297755c1405}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Project Files\Core\Classes\Perm\Dictionary">
+      <UniqueIdentifier>{70cfcd80-2f3e-4765-aebb-7e1e01631251}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cxx">
+      <Filter>Project Files</Filter>
+    </ClCompile>
+    <ClCompile Include="3rdParty\ImGui\imgui.cpp">
+      <Filter>Project Files\3rdParty\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="3rdParty\ImGui\imgui_draw.cpp">
+      <Filter>Project Files\3rdParty\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="3rdParty\ImGui\imgui_impl_dx11.cpp">
+      <Filter>Project Files\3rdParty\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="3rdParty\ImGui\imgui_impl_win32.cpp">
+      <Filter>Project Files\3rdParty\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="3rdParty\ImGui\imgui_tables.cpp">
+      <Filter>Project Files\3rdParty\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="3rdParty\ImGui\imgui_widgets.cpp">
+      <Filter>Project Files\3rdParty\ImGui</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="3rdParty\ImGui\imconfig.h">
+      <Filter>Project Files\3rdParty\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdParty\ImGui\imgui.h">
+      <Filter>Project Files\3rdParty\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdParty\ImGui\imgui_impl_dx11.h">
+      <Filter>Project Files\3rdParty\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdParty\ImGui\imgui_impl_win32.h">
+      <Filter>Project Files\3rdParty\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdParty\ImGui\imgui_internal.h">
+      <Filter>Project Files\3rdParty\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdParty\ImGui\imstb_rectpack.h">
+      <Filter>Project Files\3rdParty\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdParty\ImGui\imstb_textedit.h">
+      <Filter>Project Files\3rdParty\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdParty\ImGui\imstb_truetype.h">
+      <Filter>Project Files\3rdParty\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Resource Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Resources\FontAwesome.hxx">
+      <Filter>Resource Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Core.hxx">
+      <Filter>Project Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Classes\Perm\.Perm.hxx">
+      <Filter>Project Files\Core\Classes\Perm</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Format.hxx">
+      <Filter>Project Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Resources\PermToolIcons.hxx">
+      <Filter>Resource Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Classes\Perm\ModelData.hxx">
+      <Filter>Project Files\Core\Classes\Perm</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Classes\ResourceData.hxx">
+      <Filter>Project Files\Core\Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\CoreFunctions.hxx">
+      <Filter>Project Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Classes\Perm\Buffer.hxx">
+      <Filter>Project Files\Core\Classes\Perm</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Classes\QSymbolMap.hxx">
+      <Filter>Project Files\Core\Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Classes\Perm\Material.hxx">
+      <Filter>Project Files\Core\Classes\Perm</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdParty\ImGui\imgui_memory_editor.h">
+      <Filter>Project Files\3rdParty\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdParty\umHalf.h">
+      <Filter>Project Files\3rdParty</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Classes\Perm\BonePalette.hxx">
+      <Filter>Project Files\Core\Classes\Perm</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Classes\Perm\UILocalization.hxx">
+      <Filter>Project Files\Core\Classes\Perm</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Classes\Perm\Dictionary\UILocalization.hxx">
+      <Filter>Project Files\Core\Classes\Perm\Dictionary</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="PermTool.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="icon.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="3rdParty\umHalf.inl">
+      <Filter>Project Files\3rdParty</Filter>
+    </None>
+  </ItemGroup>
+</Project>
