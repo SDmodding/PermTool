@@ -21,6 +21,7 @@ public:
 	void* m_DataPtr = nullptr;
 	size_t m_DataSize = 0;
 
+	bool m_HasCtxOptions = false;
 	bool m_HasTreeNodeItems = false;
 
 	virtual ~CPerm() 
@@ -124,6 +125,7 @@ public:
 
 	virtual void OnDataLoad() { }
 
+	virtual void RenderCtxOptions() { }
 	virtual void RenderTreeNode() { }
 	virtual void RenderProperties() { }
 };
@@ -135,6 +137,7 @@ public:
 #include "ModelData.hxx"
 #include "Texture.hxx"
 #include "UILocalization.hxx"
+#include "UIScreen.hxx"
 
 // Functions
 namespace Perm
@@ -155,8 +158,19 @@ namespace Perm
 			return new CTexture;
 		case RESOURCE_TYPE_UILocalization:
 			return new CUILocalization;
+		case RESOURCE_TYPE_UIScreen:
+			return new CUIScreen;
 		default:
 			return new CPerm;
 		}
+	}
+
+	__inline size_t GetAlignSize(size_t p_Size)
+	{
+		size_t m_Align = (p_Size % 0x10);
+		if (p_Size)
+			p_Size += (0x10 - m_Align);
+
+		return p_Size;
 	}
 }

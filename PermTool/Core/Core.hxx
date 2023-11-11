@@ -24,6 +24,9 @@ void Core_ImGui_ResourceHandleSelectable(const char* p_Name, uint32_t p_NameUID,
 void Core_SelectResourceName(uint32_t p_NameUID);
 class CResourceData* Core_FindResourceByName(uint32_t p_NameUID);
 
+// Global Classes
+#include "GClasses/PopupHandler.hxx"
+
 // Classes Important
 #include "Classes/QSymbolMap.hxx"
 #include "Classes/ResourceData.hxx"
@@ -34,6 +37,9 @@ class CResourceData* Core_FindResourceByName(uint32_t p_NameUID);
 
 // Classes
 #include "Classes/Perm/.Perm.hxx"
+
+// Helpers
+#include "Helpers/UIScreen.hxx"
 
 // Core
 class CCore
@@ -255,11 +261,12 @@ public:
                 ImGui::SetNextItemOpen(true);
             }
 
-            bool m_TreeNodeOpen = ImGui::TreeNodeEx(Format::Get("%s %s##%u.%zu", m_ResourceTypeInfo->m_Icon, m_ResourceData->m_DebugName, m_ResourceData->m_NameUID, i), m_TreeNodeFlags);
+            bool m_TreeNodeOpen = ImGui::TreeNodeEx(Format::Get("%s %s##%u.%zu", m_ResourceTypeInfo->m_Icon, m_ResourceData->m_DebugName, m_ResourceData->m_NameUID, i), m_TreeNodeFlags | ImGuiTreeNodeFlags_SpanAvailWidth);
             if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen())
                 m_PermSelected = m_Perm;
-
-            if (Core_ImGui_ToolTipHover())
+            else if (Core_ImGui_RightClickItemPopup("##PermCtxOptions"))
+                m_PermSelected = m_Perm;
+            else if (Core_ImGui_ToolTipHover())
             {
                 std::pair<const char*, std::string> m_ResourceInfoList[] =
                 {
@@ -284,6 +291,21 @@ public:
                 m_Perm->RenderTreeNode();
                 ImGui::TreePop();
             }
+        }
+
+        if (ImGui::BeginPopupContextItem("##PermCtxOptions"))
+        {
+            if (m_PermSelected)
+            {
+                if (m_PermSelected->m_HasCtxOptions)
+                    m_PermSelected->RenderCtxOptions();
+                else
+                    ImGui::Text("This entry has no options.");
+            }
+            else
+                ImGui::CloseCurrentPopup();
+
+            ImGui::EndPopup();
         }
 	}
 

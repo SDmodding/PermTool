@@ -29,6 +29,12 @@
     <Filter Include="Project Files\Core\Symbols">
       <UniqueIdentifier>{7e7f4ca1-ae61-458e-8db7-6884ab78cee9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Project Files\Core\GClasses">
+      <UniqueIdentifier>{15d9df2e-da90-4401-a055-648172667209}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Project Files\Core\Helpers">
+      <UniqueIdentifier>{a880840c-6e14-4c9f-968c-a0900e9cf0e1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cxx">
@@ -137,6 +143,15 @@
     </ClInclude>
     <ClInclude Include="Core\Symbols\RasterState.hxx">
       <Filter>Project Files\Core\Symbols</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Classes\Perm\UIScreen.hxx">
+      <Filter>Project Files\Core\Classes\Perm</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\GClasses\PopupHandler.hxx">
+      <Filter>Project Files\Core\GClasses</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Helpers\UIScreen.hxx">
+      <Filter>Project Files\Core\Helpers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

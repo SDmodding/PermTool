@@ -137,6 +137,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <Optimization>MinSpace</Optimization>
       <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
+      <StringPooling>true</StringPooling>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -172,12 +173,15 @@
     <ClInclude Include="Core\Classes\Perm\ModelData.hxx" />
     <ClInclude Include="Core\Classes\Perm\Texture.hxx" />
     <ClInclude Include="Core\Classes\Perm\UILocalization.hxx" />
+    <ClInclude Include="Core\Classes\Perm\UIScreen.hxx" />
     <ClInclude Include="Core\Classes\QSymbolMap.hxx" />
     <ClInclude Include="Core\Classes\ResourceData.hxx" />
     <ClInclude Include="Core\Core.hxx" />
     <ClInclude Include="Core\Classes\Perm\.Perm.hxx" />
     <ClInclude Include="Core\CoreFunctions.hxx" />
     <ClInclude Include="Core\Format.hxx" />
+    <ClInclude Include="Core\GClasses\PopupHandler.hxx" />
+    <ClInclude Include="Core\Helpers\UIScreen.hxx" />
     <ClInclude Include="Core\Symbols\AlphaState.hxx" />
     <ClInclude Include="Core\Symbols\RasterState.hxx" />
     <ClInclude Include="resource.h" />

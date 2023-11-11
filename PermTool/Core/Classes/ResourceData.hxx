@@ -173,7 +173,7 @@ static std::unordered_map<uint32_t, ResourceTypeInfo_t> g_ResourceTypeMap =
 	{ RESOURCE_TYPE_UELFragmentTable,				{ "UELFragmentTable",					u8"\u0100" }},
 	{ RESOURCE_TYPE_UILocalization,					{ "UILocalization",						u8"\uF1AB" }},
 	{ RESOURCE_TYPE_UIMinimapTile,					{ "UIMinimapTile",						u8"\u0100" }},
-	{ RESOURCE_TYPE_UIScreen,						{ "UIScreen",							u8"\u0100" }},
+	{ RESOURCE_TYPE_UIScreen,						{ "UIScreen",							u8"\uF40E" }},
 	{ RESOURCE_TYPE_UniqueUIDTableResource,			{ "UniqueUIDTableResource",				u8"\u0100" }},
 	{ RESOURCE_TYPE_VertexDecl,						{ "VertexDecl",							u8"\u0100" }},
 	{ RESOURCE_TYPE_VolumetricEffectSettings,		{ "VolumetricEffectSettings",			u8"\u0100" }},

@@ -4,6 +4,7 @@
 #include "3rdParty/umHalf.h"
 
 #include <iostream>
+#include <filesystem>
 #include <unordered_map>
 #include <map>
 #include <vector>
@@ -17,7 +18,7 @@
 
 // Defines
 #define PROJECT_NAME        "Perm Tool"
-#define PROJECT_VERSION     "WIP"
+#define PROJECT_VERSION     "v0.1"
 
 // Resources
 #include "resource.h"
@@ -34,6 +35,8 @@
 // Globals
 HWND g_Window = nullptr;
 ImGuiIO* g_ImGuiIO = nullptr;
+
+const char* g_PopupErrorTitle = u8"\uF06A Error";
 
 // Core
 #include "Core/Core.hxx"
@@ -75,47 +78,68 @@ namespace Render
         }
 
         bool m_OpenFile = false, m_SaveFile = false;
-        bool m_AllowSaveFile = (!g_Core.m_Perms.empty());
+        bool m_IsPermsNotEmpty = (!g_Core.m_Perms.empty());
         if (ImGui::BeginMenuBar())
         {
-            if (ImGui::MenuItem(u8"\uF56F Open", nullptr))
-                m_OpenFile = true;
+            if (ImGui::BeginMenu(u8"\uF15B File"))
+            {
+                if (ImGui::MenuItemEx("Open", u8"\uF56F", "CTRL + O"))
+                    m_OpenFile = true;
+
+                if (ImGui::MenuItemEx("Save", u8"\uF56E", "CTRL + S", false, m_IsPermsNotEmpty))
+                    m_SaveFile = true;
+
+                if (ImGui::MenuItemEx("Close", nullptr, nullptr, false, m_IsPermsNotEmpty))
+                    g_Core.Reset();
+
+                ImGui::Separator();
+
+                if (ImGui::MenuItemEx("Export", u8"\uE175", nullptr, false, m_IsPermsNotEmpty))
+                    g_Core.ExportPermFileDialog();
+
+                ImGui::SetItemTooltip("Will export Perm File to individual bin files.");
+
+                ImGui::EndMenu();
+            }
+
+            if (ImGui::BeginMenu(u8"\uF31C Scribe"))
+            {
+                if (ImGui::MenuItemEx("UIScreen", Resource::GetTypeInfo(RESOURCE_TYPE_UIScreen)->m_Icon))
+                    Helper::UIScreen::Scribe();
+
+                ImGui::EndMenu();
+            }
+
+            ImGui::SetCursorPosX(ImGui::GetContentRegionMax().x - 216.f);
+            if (ImGui::MenuItem(u8"\u01A0 GitHub Repo"))
+                ShellExecuteA(0, "open", "https://github.com/SDmodding/PermTool", 0, 0, SW_SHOWNORMAL);
 
             if (Core_ImGui_ToolTipHover())
             {
-                Core_ImGui_TextSuffix("Shortcut", "(CTRL + O)");
+                ImGui::Text("This entire project is open-source.");
+                ImGui::SameLine();
+                ImGui::PushStyleColor(ImGuiCol_Text, IMGUI_COLOR_TEXT2);
+                ImGui::Text("(Click to open in browser)");
+                ImGui::PopStyleColor();
+
                 ImGui::EndTooltip();
             }
 
-            if (ImGui::MenuItem(u8"\uF56E Save", nullptr, nullptr, m_AllowSaveFile))
-                m_SaveFile = true;
-
-            if (Core_ImGui_ToolTipHover())
-            {
-                Core_ImGui_TextSuffix("Shortcut", "(CTRL + S)");
-                ImGui::EndTooltip();
-            }
-
-            if (ImGui::MenuItem(u8"\uE175 Export", nullptr, nullptr, m_AllowSaveFile))
-                g_Core.ExportPermFileDialog();
-
-            ImGui::SetItemTooltip("Will export Perm File to individual bin files.");
-
-            ImGui::SetCursorPosX(ImGui::GetContentRegionMax().x - 105.f);
             ImGui::MenuItem(u8"\uF05A Build Info");
             if (Core_ImGui_ToolTipHover())
             {
-                Core_ImGui_TextSuffix("Date", (__DATE__ ", " __TIME__), 80.f);
-                Core_ImGui_TextSuffix("Version", PROJECT_VERSION, 80.f);
+                static constexpr float m_StartX = 100.f;
+                Core_ImGui_TextSuffix("Date", (__DATE__ ", " __TIME__), m_StartX);
+                Core_ImGui_TextSuffix("Version", PROJECT_VERSION, m_StartX);
+
+                ImGui::Separator();
+                Core_ImGui_TextSuffix("Copyright", "(c) 2023 SDmodding", m_StartX);
 
                 ImGui::EndTooltip();
             }
 
             ImGui::EndMenuBar();
         }
-
-        static const char* m_ErrorTitle = u8"\uF06A Error";
-        static std::string m_ErrorStr;
 
         // Shortcuts
         if (ImGui::GetCurrentContext()->OpenPopupStack.empty())
@@ -145,30 +169,13 @@ namespace Render
         {
             const char* m_Result = g_Core.OpenPermFile();
             if (m_Result)
-            {
-                ImGui::OpenPopup(m_ErrorTitle);
-                m_ErrorStr = m_Result;
-            }
+                g_PopupHandler.AddText(g_PopupErrorTitle, m_Result);
         }
 
-        if (m_SaveFile && m_AllowSaveFile && !g_Core.SavePermFile())
-        {
-            ImGui::OpenPopup(m_ErrorTitle);
-            m_ErrorStr = "Failed to open/write Perm file!";
-        }
+        if (m_SaveFile && m_IsPermsNotEmpty && !g_Core.SavePermFile())
+            g_PopupHandler.AddText(g_PopupErrorTitle, "Failed to open/write Perm file!");
 
-        // Popups
-        ImGui::SetNextWindowSize({ 300.f, -1.f }, ImGuiCond_Always);
-        if (ImGui::BeginPopupModal(m_ErrorTitle, nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove))
-        {
-            ImGui::TextWrapped(&m_ErrorStr[0]);
-
-            if (ImGui::Button("OK", { -1.f, 0.f }))
-                ImGui::CloseCurrentPopup();
-
-            ImGui::EndPopup();
-        }
-
+        g_PopupHandler.Render();
         ImGui::End();
     }
     
@@ -312,11 +319,7 @@ namespace ImGui
             m_FontConfig.OversampleH = 1;
             m_FontConfig.GlyphOffset.y += 1.f;
             m_FontConfig.PixelSnapH = true;
-            static const ImWchar m_GlyphRange[] =
-            {
-                0xE000, 0xF8FF, // PUA
-                0,
-            };
+            static const ImWchar m_GlyphRange[] = { 0xE000, 0xF8FF, 0 };
             g_ImGuiIO->Fonts->AddFontFromMemoryCompressedTTF(Resource::FontAwesome_compressed_data, Resource::FontAwesome_compressed_size, 12.f, &m_FontConfig, m_GlyphRange);
         }
 
@@ -396,12 +399,12 @@ LRESULT WINAPI WndProc(HWND p_HWND, UINT p_Msg, WPARAM p_WParam, LPARAM p_LParam
     return DefWindowProcA(p_HWND, p_Msg, p_WParam, p_LParam);
 }
 
-const char* g_DebugPermFilePath = R"(C:\Program Files (x86)\Steam\steamapps\common\SleepingDogsDefinitiveEdition\Vehicles\__Unknown\Heli01_TS001.perm.bin)";
+const char* g_DebugPermFilePath = R"(C:\Program Files (x86)\Steam\steamapps\common\SleepingDogsDefinitiveEdition\UI\Data\UI\Screens\Hud.bin)";
 
 // Main
 int WINAPI WinMain(HINSTANCE p_Instance, HINSTANCE p_PrevInstance, char* p_CmdLine, int p_CmdShow)
 {
-    WNDCLASSEXA m_WndClass = { sizeof(WNDCLASSEXA), CS_CLASSDC, WndProc, 0L, 0L, GetModuleHandleA(0), 0, 0, 0, 0, "PermTool_000", 0 };
+    WNDCLASSEXA m_WndClass = { sizeof(WNDCLASSEXA), CS_CLASSDC, WndProc, 0L, 0L, GetModuleHandleA(0), 0, 0, 0, 0, "PermTool_WndClass", 0 };
     m_WndClass.hIcon = LoadIconA(p_Instance, MAKEINTRESOURCEA(IDI_ICON1));
     if (RegisterClassExA(&m_WndClass) == 0)
     {
