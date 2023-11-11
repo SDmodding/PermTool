@@ -2,4 +2,4 @@
 This tool provides user-friendly GUI system for exploring (Perm/Bin) files.
 
 ## Screenshots
-<img src="https://github.com/SDmodding/PermTool/assets/29150970/a2521d38-131b-4f66-8a95-98e95ec24157" width="45%"/> <img src="https://github.com/SDmodding/PermTool/assets/29150970/c4d4b2ba-aa6f-465f-91cd-92de90592395" width="45%"/>
+<img src="https://github.com/SDmodding/PermTool/assets/29150970/079b2e74-c8e4-403a-8489-f575ef5a8ad0" width="45%"/> <img src="https://github.com/SDmodding/PermTool/assets/29150970/df8bd4a9-439a-46f3-988e-4557275a0128" width="45%"/>
