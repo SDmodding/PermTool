@@ -64,7 +64,7 @@ public:
 		if (!m_NewDataPtr)
 			return;
 		
-		memset(m_NewDataPtr, 0, m_NewDataSize);
+		ZeroMemory(m_NewDataPtr, m_NewDataSize);
 		memcpy(m_NewDataPtr, m_DataPtr, static_cast<size_t>(GetResourceEntry()->m_Offset) + sizeof(Illusion::Material_t));
 		m_DataPtr	= m_NewDataPtr;
 		m_DataSize	= m_NewDataSize;
@@ -166,7 +166,7 @@ public:
 			return;
 
 		Illusion::MaterialParam_t m_Param;
-		memset(&m_Param, 0, sizeof(m_Param));
+		ZeroMemory(&m_Param, sizeof(m_Param));
 		m_Param.m_StateParam.m_TypeUID = p_StateTypeUID;
 		m_Param.m_StateParam.m_NameUID = p_StateNameUID;
 		m_Param.m_TypeUID = p_TypeUID;
@@ -260,7 +260,7 @@ public:
 					MaterialParamCtxItem.m_Name		= m_ParamStateName;
 					MaterialParamCtxItem.m_Ptr		= m_Param;
 					MaterialParamCtxItem.m_Backup	= *m_Param;
-					memset(MaterialParamCtxItem.m_Str, 0, sizeof(MaterialParamCtxItem_t::m_Str));
+					ZeroMemory(MaterialParamCtxItem.m_Str, sizeof(MaterialParamCtxItem_t::m_Str));
 				}
 			}
 

@@ -92,7 +92,7 @@ public:
         if (!m_NewDataPtr)
             return;
 
-        memset(m_NewDataPtr, 0, m_NewDataSize);
+        ZeroMemory(m_NewDataPtr, m_NewDataSize);
         memcpy(m_NewDataPtr, m_DataPtr, (sizeof(UFG::UILocalization_t) + m_UILocalization->m_SymbolsSize));
         m_DataPtr   = m_NewDataPtr;
         m_DataSize  = m_NewDataSize;
@@ -182,7 +182,7 @@ public:
                     auto& m_Pair = m_DisplayList[m_HoveredRow - 1];
                     LocalizationEditValue.m_Name = GetKeyName(m_Pair.first);
                     LocalizationEditValue.m_Key = m_Pair.first;
-                    memset(LocalizationEditValue.m_Str, 0, sizeof(LocalizationEditValue_t::m_Str));
+                    ZeroMemory(LocalizationEditValue.m_Str, sizeof(LocalizationEditValue_t::m_Str));
                     strncpy(LocalizationEditValue.m_Str, m_Pair.second, sizeof(LocalizationEditValue_t::m_Str));
                 }
 

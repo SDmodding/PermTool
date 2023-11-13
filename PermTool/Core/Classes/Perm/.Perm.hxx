@@ -98,7 +98,7 @@ public:
 			{
 				g_PermSetNameUID.m_Ptr = &m_ResourceData->m_NameUID;
 				g_PermSetNameUID.m_Backup = m_ResourceData->m_NameUID;
-				memset(g_PermSetNameUID.m_Str, 0, sizeof(PermSetNameUID_t::m_Str));
+				ZeroMemory(g_PermSetNameUID.m_Str, sizeof(PermSetNameUID_t::m_Str));
 				strncpy(g_PermSetNameUID.m_Str, m_ResourceData->m_DebugName, sizeof(PermSetNameUID_t::m_Str));
 			}
 
@@ -113,7 +113,7 @@ public:
 			{
 				size_t m_NumChars = strlen(m_ResourceData->m_DebugName);
 				size_t m_SizeToZero = (sizeof(CResourceData::m_DebugName) - m_NumChars);
-				memset(&m_ResourceData->m_DebugName[m_NumChars], 0, m_SizeToZero);
+				ZeroMemory(&m_ResourceData->m_DebugName[m_NumChars], m_SizeToZero);
 			}
 
 			ImGui::SetItemTooltip("You can change this to whatever you want it doesn't do anything.\nIt's mainly used for debugging purposes...");		

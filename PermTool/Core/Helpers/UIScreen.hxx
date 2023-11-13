@@ -77,10 +77,10 @@ namespace Helper
 
 				size_t m_DataSize = Perm::GetAlignSize(sizeof(UFG::UIScreen_t) + m_FileSize);
 				UFG::UIScreen_t* m_UIScreen = reinterpret_cast<UFG::UIScreen_t*>(malloc(m_DataSize));
-				memset(m_UIScreen, 0, m_DataSize);
+				ZeroMemory(m_UIScreen, m_DataSize);
 				{
 					m_UIScreen->m_TypeUID = m_UIScreen->m_ChunkUID = 0x442A39D9;
-					m_UIScreen->SetEntrySize(m_DataSize);
+					m_UIScreen->SetEntrySize(static_cast<uint32_t>(m_DataSize));
 
 					m_UIScreen->m_NameUID = SDK::StringHashUpper32(p_Name);
 					strncpy(m_UIScreen->m_DebugName, p_Name, sizeof(UFG::UIScreen_t::m_DebugName));
