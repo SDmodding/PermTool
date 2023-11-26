@@ -153,6 +153,9 @@
     <ClInclude Include="Core\Helpers\UIScreen.hxx">
       <Filter>Project Files\Core\Helpers</Filter>
     </ClInclude>
+    <ClInclude Include="Core\GClasses\Args.hxx">
+      <Filter>Project Files\Core\GClasses</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="PermTool.rc">

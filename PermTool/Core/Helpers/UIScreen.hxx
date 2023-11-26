@@ -95,6 +95,11 @@ namespace Helper
 				*p_Result = m_UIScreen;
 				return eScribeRes_OK;
 			}
+
+			void CMode_Scribe(const char* p_SWFPath)
+			{
+
+			}
 		}
 
 		void Scribe()

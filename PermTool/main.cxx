@@ -18,7 +18,7 @@
 
 // Defines
 #define PROJECT_NAME        "Perm Tool"
-#define PROJECT_VERSION     "v0.1-a.1"
+#define PROJECT_VERSION     "v0.1-a.2"
 
 // Resources
 #include "resource.h"
@@ -399,11 +399,22 @@ LRESULT WINAPI WndProc(HWND p_HWND, UINT p_Msg, WPARAM p_WParam, LPARAM p_LParam
     return DefWindowProcA(p_HWND, p_Msg, p_WParam, p_LParam);
 }
 
-const char* g_DebugPermFilePath = R"(C:\Program Files (x86)\Steam\steamapps\common\SleepingDogsDefinitiveEdition\UI\Data\UI\Screens\Hud.bin)";
+const char* g_DebugPermFilePath = R"(C:\Program Files (x86)\Steam\steamapps\common\SleepingDogsDefinitiveEdition\Game\Data\World\Game\Zone\SD\HK\HK.perm.bin)";
 
 // Main
 int WINAPI WinMain(HINSTANCE p_Instance, HINSTANCE p_PrevInstance, char* p_CmdLine, int p_CmdShow)
 {
+    int m_CMode = g_Args.GetIndex("cmode");
+    if (m_CMode != -1)
+    {
+        if (!g_Core.CMode_Attach())
+            return 1;
+
+        g_Core.CMode_Main(g_Args.GetValue(m_CMode));
+        g_Core.CMode_Detach();
+        return 0;
+    }
+
     WNDCLASSEXA m_WndClass = { sizeof(WNDCLASSEXA), CS_CLASSDC, WndProc, 0L, 0L, GetModuleHandleA(0), 0, 0, 0, 0, "PermTool_WndClass", 0 };
     m_WndClass.hIcon = LoadIconA(p_Instance, MAKEINTRESOURCEA(IDI_ICON1));
     if (RegisterClassExA(&m_WndClass) == 0)

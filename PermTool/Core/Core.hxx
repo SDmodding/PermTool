@@ -6,6 +6,7 @@
 #define IMGUI_TREENODE_OPEN_FLAGS       (IMGUI_TREENODE_FLAGS | ImGuiTreeNodeFlags_DefaultOpen)
 
 // SDK
+#define UFG_MAX(a, b) max(a, b)
 #define UFG_PAD_INSERT(x, y) x ## y
 #define UFG_PAD_DEFINE(x, y) UFG_PAD_INSERT(x, y)
 #define UFG_PAD(size) char UFG_PAD_DEFINE(padding_, __LINE__)[size] = { 0x0 }
@@ -25,6 +26,7 @@ void Core_SelectResourceName(uint32_t p_NameUID);
 class CResourceData* Core_FindResourceByName(uint32_t p_NameUID);
 
 // Global Classes
+#include "GClasses/Args.hxx"
 #include "GClasses/PopupHandler.hxx"
 
 // Classes Important
@@ -49,11 +51,48 @@ public:
 	std::vector<std::unique_ptr<CPerm>> m_Perms; // Main list for each entry inside Perm file.
     int m_ImGuiReset = 0; // This will reset some ImGui stuff in multiple windows...
 
+    char m_SearchStr[64] = { '\0' };
+    bool m_SearchUpdate = false;
+
+    void SearchPerms()
+    {
+        m_SearchUpdate = false;
+
+        if (m_SearchStr[0] == '\0')
+        {
+            for (auto& m_PermPtr : m_Perms)
+                m_PermPtr.get()->m_ShowInTree = true;
+
+            return;
+        }
+
+        std::string m_SearchKey = m_SearchStr;
+        std::transform(m_SearchKey.begin(), m_SearchKey.end(), m_SearchKey.begin(), toupper);
+
+        for (auto& m_PermPtr : m_Perms)
+        {
+            CPerm* m_Perm = m_PermPtr.get();
+            UFG::ResourceEntry_t* m_ResourceEntry = m_Perm->GetResourceEntry();
+            if (!m_ResourceEntry)
+                continue;
+
+            CResourceData* m_ResourceData = reinterpret_cast<CResourceData*>(m_ResourceEntry->GetData());
+            if (!m_ResourceData)
+                continue;
+
+            std::string m_PermName = m_ResourceData->m_DebugName;
+            std::transform(m_PermName.begin(), m_PermName.end(), m_PermName.begin(), toupper);
+
+            m_Perm->m_ShowInTree = (m_PermName.find(m_SearchKey) != std::string::npos);
+        }
+    }
+
     void Reset()
     {
         m_PermSelected = nullptr;
         m_Perms.clear();
         m_ImGuiReset = 2; // Num of windows we use...
+        m_SearchUpdate = m_SearchStr[0] != '\0';
     }
 
     // Perm
@@ -233,10 +272,20 @@ public:
             ImGui_ResetStates();
         }
 
+        ImGui::SetNextItemWidth(-50.f);
+        {
+            if (ImGui::InputText("Search##Tree", m_SearchStr, sizeof(m_SearchStr)) || m_SearchUpdate)
+                SearchPerms();
+        }
+        ImGui::Separator();
+
         size_t m_Count = m_Perms.size();
         for (size_t i = 0; m_Count > i; ++i)
         {
             CPerm* m_Perm = m_Perms[i].get();
+            if (!m_Perm->m_ShowInTree)
+                continue;
+
             UFG::ResourceEntry_t* m_ResourceEntry = m_Perm->GetResourceEntry();
             if (!m_ResourceEntry)
                 continue;
@@ -321,6 +370,84 @@ public:
         {
             m_PermSelected->RenderDefaultProperties();
             m_PermSelected->RenderProperties();
+        }
+    }
+
+    // CMode (Command Line)
+
+    HANDLE m_StdOutputHandle = 0;
+    CONSOLE_SCREEN_BUFFER_INFO m_ConsoleBufferInfo = { 0 };
+
+    __inline bool CMode_Silent()
+    {
+        return (g_Args.IsSet("silent"));
+    }
+
+    bool CMode_Attach()
+    {
+        if (CMode_Silent())
+            return true;
+
+        if (!AttachConsole(ATTACH_PARENT_PROCESS))
+            return false;
+
+        // Open std outputs...
+        {
+            freopen("CONIN$", "r", stdin);
+            freopen("CONOUT$", "w", stderr);
+            freopen("CONOUT$", "w", stdout);
+        }
+
+        m_StdOutputHandle = GetStdHandle(STD_OUTPUT_HANDLE);
+        GetConsoleScreenBufferInfo(m_StdOutputHandle, &m_ConsoleBufferInfo);
+        return true;
+    }
+
+    void CMode_Detach()
+    {
+        if (CMode_Silent())
+            return;
+
+        // TODO: Somehow tell retard Windows to go back to user cmd because cmd is waiting for user to press enter/ctrl+c to exit from attached console...
+        fclose(stdin);
+        fclose(stderr);
+        fclose(stdout);
+
+        FreeConsole();
+    }
+
+    void CMode_Syntax()
+    {
+        std::string m_ModuleName(MAX_PATH, '\0');
+        if (GetModuleFileNameA(0, &m_ModuleName[0], static_cast<DWORD>(m_ModuleName.size())) == 0)
+            m_ModuleName = "PermTool.exe";
+        else
+            m_ModuleName = std::filesystem::path(m_ModuleName).filename().string();
+
+        printf("[ Syntax ] %s -cmode infile -options\n", &m_ModuleName[0]);
+    }
+
+    void CMode_Options()
+    {
+
+    }
+
+    // Callback from WinMain when running in CMode
+    void CMode_Main(char* p_PermFile)
+    {
+        if (!CMode_Silent())
+        {
+            SetConsoleTextAttribute(m_StdOutputHandle, 240); 
+            printf("PermTool console mode activated!\n"); 
+            SetConsoleTextAttribute(m_StdOutputHandle, m_ConsoleBufferInfo.wAttributes);
+        }
+
+        if (!p_PermFile || 4 > g_Args.m_Count)
+        {
+            printf("[ ! ] Invalid parameters specified.\n");
+            CMode_Syntax();
+            CMode_Options();
+            return;
         }
     }
 };

@@ -8,6 +8,18 @@ public:
 		m_HasCtxOptions = true;
 	}
 
+	bool OutputSWF(const char* p_FilePath)
+	{
+		FILE* m_File = fopen(p_FilePath, "wb");
+		if (!m_File)
+			return false;
+
+		UFG::UIScreen_t* m_UIScreen = reinterpret_cast<UFG::UIScreen_t*>(GetResourceData());
+		fwrite(m_UIScreen->GetBufferData(), 1, static_cast<size_t>(m_UIScreen->m_BufferSize), m_File);
+		fclose(m_File);
+		return true;
+	}
+
 	void ExportSWF()
 	{
 		UFG::UIScreen_t* m_UIScreen = reinterpret_cast<UFG::UIScreen_t*>(GetResourceData());
@@ -36,12 +48,7 @@ public:
 		if (m_SWFPath.find(".swf") == std::string::npos)
 			m_SWFPath += ".swf";
 
-		FILE* m_File = fopen(&m_SWFPath[0], "wb");
-		if (!m_File)
-			return;
-
-		fwrite(m_UIScreen->GetBufferData(), 1, static_cast<size_t>(m_UIScreen->m_BufferSize), m_File);
-		fclose(m_File);
+		OutputSWF(&m_SWFPath[0]);
 	}
 
 	void RenderCtxOptions()

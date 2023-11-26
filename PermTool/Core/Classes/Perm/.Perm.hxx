@@ -21,6 +21,7 @@ public:
 	void* m_DataPtr = nullptr;
 	size_t m_DataSize = 0;
 
+	bool m_ShowInTree = true;
 	bool m_HasCtxOptions = false;
 	bool m_HasTreeNodeItems = false;
 
