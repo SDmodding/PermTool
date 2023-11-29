@@ -17,6 +17,11 @@
 #include "Format.hxx"
 
 // Functions
+bool Core_ImGui_InputUInt(const char* p_Label, uint32_t* p_Value, uint32_t p_Step = 1, uint32_t p_StepFast = 100, ImGuiInputTextFlags p_Flags = ImGuiInputTextFlags_None);
+__inline bool Core_ImGui_InputHex(const char* p_Label, uint32_t* p_Value, uint32_t p_Step = 0x1, uint32_t p_StepFast = 0x100)
+{
+    return Core_ImGui_InputUInt(p_Label, p_Value, p_Step, p_StepFast, ImGuiInputTextFlags_CharsHexadecimal);
+}
 void Core_ImGui_TextSuffix(const char* p_Prefix, const char* p_Suffix, float p_StartX = 0.f);
 bool Core_ImGui_ToolTipHover();
 bool Core_ImGui_RightClickItemPopup(const char* p_StrID = nullptr);
@@ -27,6 +32,7 @@ class CResourceData* Core_FindResourceByName(uint32_t p_NameUID);
 
 // Global Classes
 #include "GClasses/Args.hxx"
+#include "GClasses/Configuration.hxx"
 #include "GClasses/PopupHandler.hxx"
 
 // Classes Important
@@ -95,27 +101,37 @@ public:
         m_SearchUpdate = m_SearchStr[0] != '\0';
     }
 
+    struct DragDrop_t
+    {
+        const char* m_Name = "PERM_DRAG_DROP";
+        size_t m_Source = 0, m_Destination = 0;
+    };
+    DragDrop_t m_DragDrop;
+
     // Perm
 
-    void AddPermResource(UFG::ResourceEntry_t* m_Resource)
+    std::unique_ptr<CPerm> GetPermResource(UFG::ResourceEntry_t* m_Resource)
     {
         CPerm* m_Perm = Perm::Get(m_Resource->m_TypeUID);
         m_Perm->InitializeData(m_Resource, static_cast<size_t>(m_Resource->GetEntrySize()));
         m_Perm->OnDataLoad();
-        m_Perms.emplace_back(std::unique_ptr<CPerm>(m_Perm));
+        return std::unique_ptr<CPerm>(m_Perm);
     }
 
-    bool LoadPermFile(const char* p_FilePath)
+    bool LoadPermFile(const char* p_FilePath, bool p_Import)
     {
         SDK::PermFile_t m_PermFile;
         if (!m_PermFile.LoadFile(p_FilePath))
             return false;
 
-        SetWindowTextA(g_Window, Format::Get("%s (%s)", PROJECT_NAME, &m_PermFile.m_Name[0]));
-        Reset();
+        if (!p_Import)
+        {
+            SetWindowTextA(g_Window, Format::Get("%s (%s)", PROJECT_NAME, &m_PermFile.m_Name[0]));
+            Reset();
+        }
 
         for (UFG::ResourceEntry_t* m_Resource : m_PermFile.m_Resources)
-            AddPermResource(m_Resource);
+            m_Perms.emplace_back(GetPermResource(m_Resource));
 
         return true;
     }
@@ -149,10 +165,10 @@ public:
         return &m_OpenFileName;
     }
 
-    const char* OpenPermFile()
+    const char* OpenPermFile(bool p_Import)
     {
         OPENFILENAMEA* m_OpenFileName = GetPermOpenFileName();
-        m_OpenFileName->lpstrTitle = "Open Perm File";
+        m_OpenFileName->lpstrTitle = (p_Import ? "Import Perm File" : "Open Perm File");
         if (GetOpenFileNameA(m_OpenFileName) == 0)
         {
             m_OpenFileName->lpstrFile[0] = '\0';
@@ -162,7 +178,7 @@ public:
         if (!HasPathBinOrPermExtension(m_OpenFileName->lpstrFile))
             return "This is not Perm file!";
 
-        if (!LoadPermFile(m_OpenFileName->lpstrFile))
+        if (!LoadPermFile(m_OpenFileName->lpstrFile, p_Import))
             return "Failed to open/read Perm file!";
 
         return nullptr;
@@ -250,6 +266,72 @@ public:
         m_FileDialog->Release();
     }
 
+    bool ExportPermResource(CPerm* p_Perm)
+    {
+        OPENFILENAMEA* m_OpenFileName = GetPermOpenFileName();
+        m_OpenFileName->lpstrTitle = "Export Resource File";
+        m_OpenFileName->lpstrFilter = "(Bin File)\0*.bin\0";
+        if (GetSaveFileNameA(m_OpenFileName) == 0)
+        {
+            m_OpenFileName->lpstrFile[0] = '\0';
+            return true;
+        }
+
+        std::string m_FilePath = m_OpenFileName->lpstrFile;
+        if (!HasPathBinOrPermExtension(m_OpenFileName->lpstrFile))
+            m_FilePath += ".bin";
+
+        FILE* m_File = fopen(&m_FilePath[0], "wb");
+        if (!m_File)
+            return false;
+
+        fwrite(p_Perm->m_DataPtr, 1, p_Perm->m_DataSize, m_File);
+        fclose(m_File);
+        return true;
+    }
+
+    const char* ReplaceSelectedPermResource()
+    {
+        OPENFILENAMEA* m_OpenFileName = GetPermOpenFileName();
+        m_OpenFileName->lpstrTitle = "Open Resource File";
+        m_OpenFileName->lpstrFilter = "(Bin File)\0*.bin\0";
+        if (GetOpenFileNameA(m_OpenFileName) == 0)
+        {
+            m_OpenFileName->lpstrFile[0] = '\0';
+            return nullptr;
+        }
+
+        if (!HasPathBinOrPermExtension(m_OpenFileName->lpstrFile))
+            return "This is not Resource file!";
+
+        SDK::PermFile_t m_PermFile;
+        if (!m_PermFile.LoadFile(m_OpenFileName->lpstrFile))
+            return "Failed to open/read Resource file!";
+
+        if (m_PermFile.m_Resources.empty())
+            return "No Resource found!";
+
+        std::unique_ptr<CPerm> m_PermResourcePtr = GetPermResource(m_PermFile.m_Resources[0]);
+        CPerm* m_PermResource = m_PermResourcePtr.get();
+
+        CResourceData* m_ResourceData = m_PermResource->GetResourceData();
+        if (!m_ResourceData)
+            return "No ResourceData found!";
+
+        CResourceData* m_ReplaceResourceData = m_PermSelected->GetResourceData();
+        if (m_ResourceData->m_TypeUID != m_ReplaceResourceData->m_TypeUID || m_ResourceData->m_ChunkUID != m_ReplaceResourceData->m_ChunkUID)
+            return "TypeUID/ChunkUID mismatch!";
+
+        for (auto& m_Perm : m_Perms)
+        {
+            if (m_Perm.get() == m_PermSelected)
+                m_Perm.swap(m_PermResourcePtr);
+        }
+
+        m_PermSelected = m_PermResource;
+        return nullptr;
+    }
+
     // ImGui
     void ImGui_ResetStates()
     {
@@ -263,6 +345,35 @@ public:
     // Render
 
     uint32_t m_SelectResourceNameUID = UINT32_MAX;
+
+    static bool Render_RemovePopup(CCore* p_Core)
+    {
+        ImGui::TextWrapped("Are you sure you want to remove: '%s'?", p_Core->m_PermSelected->GetName());
+
+        float m_ButtonWidth = floorf(ImGui::GetContentRegionAvail().x * 0.5f) - 4.f;
+
+        if (ImGui::Button("Yes", { m_ButtonWidth, 0.f }))
+        {
+            for (auto m_It = p_Core->m_Perms.begin(); m_It != p_Core->m_Perms.end(); ++m_It)
+            {
+                if ((*m_It).get() == p_Core->m_PermSelected)
+                {
+                    p_Core->m_Perms.erase(m_It);
+                    break;
+                }
+            }
+
+            p_Core->m_PermSelected = nullptr;
+            return true;
+        }
+
+        ImGui::SameLine();
+
+        if (ImGui::Button("No", { m_ButtonWidth, 0.f }))
+            return true;
+
+        return false;
+    }
 
 	void RenderTree()
 	{
@@ -310,12 +421,15 @@ public:
                 ImGui::SetNextItemOpen(true);
             }
 
-            bool m_TreeNodeOpen = ImGui::TreeNodeEx(Format::Get("%s %s##%u.%zu", m_ResourceTypeInfo->m_Icon, m_ResourceData->m_DebugName, m_ResourceData->m_NameUID, i), m_TreeNodeFlags | ImGuiTreeNodeFlags_SpanAvailWidth);
+            const char* m_ResourceNodeID = Format::Get("##%u.%zu", m_ResourceData->m_NameUID, i);
+            std::string m_ResourceName = m_ResourceData->GetName();
+            bool m_TreeNodeOpen = ImGui::TreeNodeEx(m_ResourceNodeID, m_TreeNodeFlags | ImGuiTreeNodeFlags_SpanAvailWidth, "%s %s", m_ResourceTypeInfo->m_Icon, m_ResourceName.c_str());
+            ImGui::PushID(m_ResourceNodeID);
+
             if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen())
                 m_PermSelected = m_Perm;
-            else if (Core_ImGui_RightClickItemPopup("##PermCtxOptions"))
-                m_PermSelected = m_Perm;
-            else if (Core_ImGui_ToolTipHover())
+            
+            if (Core_ImGui_ToolTipHover())
             {
                 std::pair<const char*, std::string> m_ResourceInfoList[] =
                 {
@@ -335,26 +449,84 @@ public:
                 ImGui::EndTooltip();
             }
 
+            if (Core_ImGui_RightClickItemPopup("##PermCtxOptions"))
+                m_PermSelected = m_Perm;
+
+            if (ImGui::BeginPopupContextItem("##PermCtxOptions"))
+            {
+                if (m_PermSelected)
+                {
+                    if (m_PermSelected->m_HasCtxOptions)
+                    {
+                        m_PermSelected->RenderCtxOptions();
+                        ImGui::Separator();
+                    }
+
+                    if (ImGui::MenuItem(u8"\uF361 Replace"))
+                    {
+                        const char* m_Result = ReplaceSelectedPermResource();
+                        if (m_Result)
+                            g_PopupHandler.AddText(g_PopupErrorTitle, m_Result);
+                    }
+
+                    if (ImGui::MenuItem(u8"\uF56E Export"))
+                        ExportPermResource(m_PermSelected);
+
+                    if (ImGui::MenuItem(u8"\uF1F8 Remove"))
+                        g_PopupHandler.AddCallback(u8"\uF1F8 Remove", { 400.f, -1.f }, Render_RemovePopup, this);
+                }
+                else
+                    ImGui::CloseCurrentPopup();
+
+                ImGui::EndPopup();
+            }
+
+            if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceNoDisableHover | ImGuiDragDropFlags_SourceNoHoldToOpenOthers | ImGuiDragDropFlags_SourceNoPreviewTooltip))
+            {
+                ImGui::SetDragDropPayload(m_DragDrop.m_Name, &i, sizeof(size_t));
+                ImGui::EndDragDropSource();
+
+                if (g_Configuration.Warning.CanShowMoveResource())
+                    g_PopupHandler.AddText(u8"\uF071 Warning", "Moving resources around can cause issues when you don't know what you're doing!");
+            }
+
+            if (ImGui::BeginDragDropTarget())
+            {
+                if (const ImGuiPayload* m_PayLoad = ImGui::AcceptDragDropPayload(m_DragDrop.m_Name, ImGuiDragDropFlags_AcceptBeforeDelivery | ImGuiDragDropFlags_AcceptNoDrawDefaultRect))
+                {
+                    m_DragDrop.m_Source = *reinterpret_cast<size_t*>(m_PayLoad->Data);
+                    m_DragDrop.m_Destination = i;
+                }
+
+                ImGui::EndDragDropTarget();
+            }
+
             if (m_TreeNodeOpen)
             {
                 m_Perm->RenderTreeNode();
                 ImGui::TreePop();
             }
+
+            ImGui::PopID();
         }
 
-        if (ImGui::BeginPopupContextItem("##PermCtxOptions"))
+        if (m_DragDrop.m_Source != m_DragDrop.m_Destination)
         {
-            if (m_PermSelected)
+            if (m_DragDrop.m_Source > m_DragDrop.m_Destination)
             {
-                if (m_PermSelected->m_HasCtxOptions)
-                    m_PermSelected->RenderCtxOptions();
-                else
-                    ImGui::Text("This entry has no options.");
+                size_t m_NumToMove = (m_DragDrop.m_Source - m_DragDrop.m_Destination);
+                for (size_t i = 0; m_NumToMove > i; ++i)
+                    m_Perms[m_DragDrop.m_Source - i].swap(m_Perms[m_DragDrop.m_Source - i - 1]);
             }
             else
-                ImGui::CloseCurrentPopup();
+            {
+                size_t m_NumToMove = (m_DragDrop.m_Destination - m_DragDrop.m_Source);
+                for (size_t i = 0; m_NumToMove > i; ++i)
+                    m_Perms[m_DragDrop.m_Source + i].swap(m_Perms[m_DragDrop.m_Source + i + 1]);
+            }
 
-            ImGui::EndPopup();
+            ImGui::SetDragDropPayload(m_DragDrop.m_Name, &m_DragDrop.m_Destination, sizeof(size_t));
+            m_DragDrop.m_Source = m_DragDrop.m_Destination = 0;
         }
 	}
 

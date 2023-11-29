@@ -1,5 +1,11 @@
 #pragma once
 
+bool Core_ImGui_InputUInt(const char* p_Label, uint32_t* p_Value, uint32_t p_Step, uint32_t p_StepFast , ImGuiInputTextFlags p_Flags)
+{
+    const char* m_Format = (p_Flags & ImGuiInputTextFlags_CharsHexadecimal) ? "%08X" : "%u";
+    return ImGui::InputScalar(p_Label, ImGuiDataType_U32, (void*)p_Value, (void*)(p_Step > 0 ? &p_Step : 0), (void*)(p_StepFast > 0 ? &p_StepFast : 0), m_Format, p_Flags);
+}
+
 void Core_ImGui_TextSuffix(const char* p_Prefix, const char* p_Suffix, float p_StartX)
 {
     ImGui::Text("%s:", p_Prefix);
@@ -49,12 +55,13 @@ void Core_ImGui_ResourceHandleSelectable(const char* p_Name, uint32_t p_NameUID,
     CResourceData* m_HandleResourceData = Core_FindResourceByName(p_NameUID);
     if (m_HandleResourceData)
     {
-        if (ImGui::Selectable(Format::Get("%s##%u", m_HandleResourceData->m_DebugName, p_OwnerUID), false))
+        std::string m_ResourceName = m_HandleResourceData->GetName();
+        if (ImGui::Selectable(Format::Get("%s##%u", m_ResourceName.c_str(), p_OwnerUID), false))
             Core_SelectResourceName(p_NameUID);
 
         ImGui::PopStyleColor();
 
-        ImGui::SetItemTooltip(m_HandleResourceData->m_DebugName);
+        ImGui::SetItemTooltip(m_ResourceName.c_str());
         return;
     }
     else

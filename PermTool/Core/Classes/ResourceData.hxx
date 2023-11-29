@@ -198,5 +198,11 @@ namespace Resource
 class CResourceData : public UFG::ResourceData_t
 {
 public:
+	const char* GetName()
+	{
+		if (m_DebugName[0] == '\0')
+			return Format::Get("0x%X", m_NameUID);
 
+		return m_DebugName;
+	}
 };

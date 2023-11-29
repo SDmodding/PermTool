@@ -9,21 +9,23 @@ public:
 		std::string m_Text;
 		ImVec2 m_Size;
 		void* m_RenderCallback = nullptr;
+		void* m_RenderCallbackData = nullptr;
 	};
 	std::vector<Popup_t> m_List;
 
 	__inline void Push(Popup_t& p_Popup) { m_List.emplace_back(p_Popup); }
 
-	void AddCallback(const char* p_Title, const ImVec2& p_Size, void* p_RenderCallback)
+	__inline void AddCallback(const char* p_Title, const ImVec2& p_Size, void* p_RenderCallback, void* p_RenderCallbackData = nullptr)
 	{
 		Popup_t m_Popup;
 		m_Popup.m_Title = p_Title;
 		m_Popup.m_Size = p_Size;
 		m_Popup.m_RenderCallback = p_RenderCallback;
+		m_Popup.m_RenderCallbackData = p_RenderCallbackData;
 		Push(m_Popup);
 	}
 
-	void AddText(const char* p_Title, const char* p_Text)
+	__inline void AddText(const char* p_Title, const char* p_Text)
 	{
 		Popup_t m_Popup;
 		m_Popup.m_Title = p_Title;
@@ -46,7 +48,7 @@ public:
 		{
 			if (m_Popup.m_RenderCallback)
 			{
-				if (reinterpret_cast<bool(*)()>(m_Popup.m_RenderCallback)())
+				if (reinterpret_cast<bool(*)(void*)>(m_Popup.m_RenderCallback)(m_Popup.m_RenderCallbackData))
 				{
 					m_List.erase(m_List.begin());
 					ImGui::CloseCurrentPopup();

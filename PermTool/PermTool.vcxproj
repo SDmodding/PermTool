@@ -181,6 +181,7 @@
     <ClInclude Include="Core\CoreFunctions.hxx" />
     <ClInclude Include="Core\Format.hxx" />
     <ClInclude Include="Core\GClasses\Args.hxx" />
+    <ClInclude Include="Core\GClasses\Configuration.hxx" />
     <ClInclude Include="Core\GClasses\PopupHandler.hxx" />
     <ClInclude Include="Core\Helpers\UIScreen.hxx" />
     <ClInclude Include="Core\Symbols\AlphaState.hxx" />

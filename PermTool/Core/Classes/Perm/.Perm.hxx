@@ -60,6 +60,15 @@ public:
 		return nullptr;
 	}
 
+	const char* GetName()
+	{
+		CResourceData* m_ResourceData = GetResourceData();
+		if (!m_ResourceData)
+			return "Unknown";
+
+		return m_ResourceData->GetName();
+	}
+
 	void RenderDefaultProperties()
 	{
 		CResourceData* m_ResourceData = GetResourceData();
@@ -93,7 +102,8 @@ public:
 		if (ImGui::CollapsingHeader(u8"\uF573 Entry Info", IMGUI_TREENODE_FLAGS))
 		{
 			ImGui::PushItemWidth(-80.f);
-			ImGui::InputInt("NameUID", reinterpret_cast<int*>(&m_ResourceData->m_NameUID), 1, 100, ImGuiInputTextFlags_CharsHexadecimal);
+
+			Core_ImGui_InputHex("NameUID", &m_ResourceData->m_NameUID);
 
 			if (Core_ImGui_RightClickItemPopup("##NameUIDSetName"))
 			{

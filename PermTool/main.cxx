@@ -18,7 +18,7 @@
 
 // Defines
 #define PROJECT_NAME        "Perm Tool"
-#define PROJECT_VERSION     "v0.1-a.2"
+#define PROJECT_VERSION     "v0.2-a.0"
 
 // Resources
 #include "resource.h"
@@ -99,6 +99,13 @@ namespace Render
 
                 ImGui::SetItemTooltip("Will export Perm File to individual bin files.");
 
+                if (ImGui::MenuItemEx("Import", u8"\uF319", nullptr, false, m_IsPermsNotEmpty))
+                {
+                    const char* m_Result = g_Core.OpenPermFile(true);
+                    if (m_Result)
+                        g_PopupHandler.AddText(g_PopupErrorTitle, m_Result);
+                }
+
                 ImGui::EndMenu();
             }
 
@@ -106,6 +113,21 @@ namespace Render
             {
                 if (ImGui::MenuItemEx("UIScreen", Resource::GetTypeInfo(RESOURCE_TYPE_UIScreen)->m_Icon))
                     Helper::UIScreen::Scribe();
+
+                ImGui::EndMenu();
+            }
+
+            if (ImGui::BeginMenu(u8"\uF4FE Configuration"))
+            {
+                if (ImGui::BeginMenu(u8"\uF071 Warning"))
+                {
+                    if (ImGui::MenuItem("Move Resource", nullptr, &g_Configuration.Warning.m_MoveResource))
+                        g_Configuration.WriteBoolean("Warning", "MoveResource", g_Configuration.Warning.m_MoveResource);
+
+                    ImGui::SetItemTooltip("Disables warning when trying to move resources around.");
+
+                    ImGui::EndMenu();
+                }
 
                 ImGui::EndMenu();
             }
@@ -167,7 +189,7 @@ namespace Render
         // Options
         if (m_OpenFile)
         {
-            const char* m_Result = g_Core.OpenPermFile();
+            const char* m_Result = g_Core.OpenPermFile(false);
             if (m_Result)
                 g_PopupHandler.AddText(g_PopupErrorTitle, m_Result);
         }
@@ -399,7 +421,7 @@ LRESULT WINAPI WndProc(HWND p_HWND, UINT p_Msg, WPARAM p_WParam, LPARAM p_LParam
     return DefWindowProcA(p_HWND, p_Msg, p_WParam, p_LParam);
 }
 
-const char* g_DebugPermFilePath = R"(C:\Program Files (x86)\Steam\steamapps\common\SleepingDogsDefinitiveEdition\Game\Data\World\Game\Zone\SD\HK\HK.perm.bin)";
+const char* g_DebugPermFilePath = R"(C:\Program Files (x86)\Steam\steamapps\common\SleepingDogsDefinitiveEdition\Characters\Data\Characters_New\H_DefaultHair.perm.bin)";
 
 // Main
 int WINAPI WinMain(HINSTANCE p_Instance, HINSTANCE p_PrevInstance, char* p_CmdLine, int p_CmdShow)
@@ -431,7 +453,7 @@ int WINAPI WinMain(HINSTANCE p_Instance, HINSTANCE p_PrevInstance, char* p_CmdLi
     }
 
 #ifdef _DEBUG
-    g_Core.LoadPermFile(g_DebugPermFilePath);
+    g_Core.LoadPermFile(g_DebugPermFilePath, false);
 #endif
 
     if (!DirectX::CreateDevice(g_Window))

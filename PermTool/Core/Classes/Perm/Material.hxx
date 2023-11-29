@@ -253,7 +253,7 @@ public:
 			{
 				Illusion::MaterialParam_t* m_Param = &m_ParamTable[i];
 				const char* m_ParamStateName = g_MaterialParamSymbolMap.Get(m_Param->m_StateParam.m_NameUID, Format::Get("0x%X", m_Param->m_StateParam.m_NameUID));
-				ImGui::InputInt(Format::Get("%s##%u.%u", m_ParamStateName, m_Material->m_NameUID, i), reinterpret_cast<int*>(&m_Param->m_NameUID), 1, 100, ImGuiInputTextFlags_CharsHexadecimal);
+				Core_ImGui_InputUInt(Format::Get("%s##%u.%u", m_ParamStateName, m_Material->m_NameUID, i), &m_Param->m_NameUID, 1, 100, ImGuiInputTextFlags_CharsHexadecimal);
 
 				if (Core_ImGui_RightClickItemPopup("##MaterialParamCtxItem"))
 				{
