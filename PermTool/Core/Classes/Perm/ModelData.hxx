@@ -50,11 +50,11 @@ public:
 	{
 		Illusion::ModelData_t* m_ModelData = reinterpret_cast<Illusion::ModelData_t*>(GetResourceData());
 
-		Core_ImGui_ResourceHandleSelectable(u8"\u0103 Bone Palette", m_ModelData->m_BonePaletteHandle.m_NameUID, m_ModelData->m_NameUID);
-		Core_ImGui_ResourceHandleSelectable(u8"\u0101 Material", m_ModelData->m_MaterialTableHandle.m_NameUID, m_ModelData->m_NameUID);
-		Core_ImGui_TextSuffix("Num Prims", Format::Get("%u", m_ModelData->m_NumPrims));
+		Core_ImGui_ResourceHandleSelectable(u8"\u0103 Bone Palette", m_ModelData->m_BonePaletteHandle.m_NameUID);
+		Core_ImGui_ResourceHandleSelectable(u8"\u0101 Material", m_ModelData->m_MaterialTableHandle.m_NameUID);
+		Core_ImGui_TextSuffix("Num Prims", Format::GetUInt(m_ModelData->m_NumPrims));
 
-		if (ImGui::TreeNodeEx(Format::Get(u8"\u0180 AABB##%u", m_ModelData->m_NameUID), IMGUI_TREENODE_FLAGS))
+		if (ImGui::TreeNodeEx(u8"\u0180 AABB", IMGUI_TREENODE_FLAGS))
 		{
 			Core_ImGui_TextSuffix("Min", Format::Get("%.5f, %.5f, %.5f", m_ModelData->m_AABBMin[0], m_ModelData->m_AABBMin[1], m_ModelData->m_AABBMin[2]));
 			Core_ImGui_TextSuffix("Max", Format::Get("%.5f, %.5f, %.5f", m_ModelData->m_AABBMax[0], m_ModelData->m_AABBMax[1], m_ModelData->m_AABBMax[2]));
@@ -62,31 +62,31 @@ public:
 			ImGui::TreePop();
 		}
 
-		if (ImGui::TreeNodeEx(Format::Get(u8"\u0181 Meshes (Count: %u)##%u", m_ModelData->m_NumMeshes, m_ModelData->m_NameUID), IMGUI_TREENODE_FLAGS))
+		if (ImGui::TreeNodeEx(u8"\u0181 Meshes", IMGUI_TREENODE_FLAGS))
 		{
 			for (uint32_t i = 0; m_ModelData->m_NumMeshes > i; ++i)
 			{
 				Illusion::Mesh_t* m_Mesh = m_ModelData->GetMesh(i);
-				if (ImGui::TreeNodeEx(Format::Get("%u##%u", i, m_ModelData->m_NameUID), IMGUI_TREENODE_FLAGS))
+				if (ImGui::TreeNodeEx(Format::GetUInt(i), IMGUI_TREENODE_FLAGS))
 				{
 					const char* m_VertexDecl = g_VertexDeclSymbolMap.Get(m_Mesh->m_VertexDeclHandle.m_NameUID);
 					{
 						if (m_VertexDecl)
 							m_VertexDecl = &m_VertexDecl[11];
 						else
-							m_VertexDecl = Format::Get("0x%X", m_Mesh->m_VertexDeclHandle.m_NameUID);
+							m_VertexDecl = Format::GetUIntHex(m_Mesh->m_VertexDeclHandle.m_NameUID);
 					}
 					Core_ImGui_TextSuffix("Vertex Declaration", m_VertexDecl);
 
-					Core_ImGui_ResourceHandleSelectable("Material", m_Mesh->m_MaterialHandle.m_NameUID, m_ModelData->m_NameUID);
-					Core_ImGui_ResourceHandleSelectable("Index", m_Mesh->m_IndexBufferHandle.m_NameUID, m_ModelData->m_NameUID);
-					Core_ImGui_ResourceHandleSelectable("Vertex[0]", m_Mesh->m_VertexBufferHandles[0].m_NameUID, m_ModelData->m_NameUID);
-					Core_ImGui_ResourceHandleSelectable("Vertex[1]", m_Mesh->m_VertexBufferHandles[1].m_NameUID, m_ModelData->m_NameUID);
-					Core_ImGui_ResourceHandleSelectable("Vertex[2]", m_Mesh->m_VertexBufferHandles[2].m_NameUID, m_ModelData->m_NameUID);
-					Core_ImGui_ResourceHandleSelectable("Vertex[3]", m_Mesh->m_VertexBufferHandles[3].m_NameUID, m_ModelData->m_NameUID);
+					Core_ImGui_ResourceHandleSelectable("Material", m_Mesh->m_MaterialHandle.m_NameUID);
+					Core_ImGui_ResourceHandleSelectable("Index", m_Mesh->m_IndexBufferHandle.m_NameUID);
+					Core_ImGui_ResourceHandleSelectable("Vertex[0]", m_Mesh->m_VertexBufferHandles[0].m_NameUID);
+					Core_ImGui_ResourceHandleSelectable("Vertex[1]", m_Mesh->m_VertexBufferHandles[1].m_NameUID);
+					Core_ImGui_ResourceHandleSelectable("Vertex[2]", m_Mesh->m_VertexBufferHandles[2].m_NameUID);
+					Core_ImGui_ResourceHandleSelectable("Vertex[3]", m_Mesh->m_VertexBufferHandles[3].m_NameUID);
 					
-					Core_ImGui_TextSuffix("Index Start", Format::Get("%u", m_Mesh->m_IndexStart));
-					Core_ImGui_TextSuffix("Num Prims", Format::Get("%u", m_Mesh->m_NumPrims));
+					Core_ImGui_TextSuffix("Index Start", Format::GetUInt(m_Mesh->m_IndexStart));
+					Core_ImGui_TextSuffix("Num Prims", Format::GetUInt(m_Mesh->m_NumPrims));
 
 					const char* m_PrimType = "Unknown";
 					switch (m_Mesh->m_PrimType)
@@ -145,7 +145,7 @@ public:
 			for (uint32_t i = 0; m_ModelData->m_NumMeshes > i; ++i)
 			{
 				Illusion::Mesh_t* m_Mesh = m_ModelData->GetMesh(i);
-				if (ImGui::TreeNodeEx(Format::Get("%u", i), IMGUI_TREENODE_FLAGS))
+				if (ImGui::TreeNodeEx(Format::GetUInt(i), IMGUI_TREENODE_FLAGS))
 				{
 					Core_ImGui_InputHex("Material", &m_Mesh->m_MaterialHandle.m_NameUID);
 					Core_ImGui_InputHex("Index", &m_Mesh->m_IndexBufferHandle.m_NameUID);

@@ -60,7 +60,7 @@ public:
 		return nullptr;
 	}
 
-	const char* GetName()
+	const char* GetResoruceName()
 	{
 		CResourceData* m_ResourceData = GetResourceData();
 		if (!m_ResourceData)
@@ -146,6 +146,7 @@ public:
 #include "Buffer.hxx"
 #include "Material.hxx"
 #include "ModelData.hxx"
+#include "SceneryGroup.hxx"
 #include "Texture.hxx"
 #include "UILocalization.hxx"
 #include "UIScreen.hxx"
@@ -165,6 +166,8 @@ namespace Perm
 			return new CMaterial;
 		case RESOURCE_TYPE_ModelData:
 			return new CModelData;
+		case RESOURCE_TYPE_SceneryGroup:
+			return new CSceneryGroup;
 		case RESOURCE_TYPE_Texture:
 			return new CTexture;
 		case RESOURCE_TYPE_UILocalization:

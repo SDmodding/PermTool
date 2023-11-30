@@ -12,8 +12,8 @@ public:
 	{
 		Illusion::Buffer_t* m_Buffer = reinterpret_cast<Illusion::Buffer_t*>(GetResourceData());
 
-		Core_ImGui_TextSuffix("Size", Format::Get("%u", m_Buffer->m_Size));
-		Core_ImGui_TextSuffix("Element Size", Format::Get("%u", m_Buffer->m_ElementSize));
-		Core_ImGui_TextSuffix("Num Elements", Format::Get("%u", m_Buffer->m_NumElements));
+		Core_ImGui_TextSuffix("Size", Format::GetUInt(m_Buffer->m_Size));
+		Core_ImGui_TextSuffix("Element Size", Format::GetUInt(m_Buffer->m_ElementSize));
+		Core_ImGui_TextSuffix("Num Elements", Format::GetUInt(m_Buffer->m_NumElements));
 	}
 };

@@ -13,7 +13,8 @@ CQSymbolMap g_MaterialParamSymbolMap = {{
 std::unordered_map<uint32_t, CQSymbolMap*> g_MaterialParamNameMap =
 {
 	{ SDK::StringHash32("iAlphaState"), &g_AlphaStateSymbolMap },
-	{ SDK::StringHash32("iRasterState"), &g_RasterStateSymbolMap }
+	{ SDK::StringHash32("iRasterState"), &g_RasterStateSymbolMap },
+	{ SDK::StringHash32("iShader"), &g_ShaderSymbolMap }
 };
 
 struct MaterialParamAdd_t
@@ -123,7 +124,7 @@ public:
 	{
 		Illusion::Material_t* m_Material = reinterpret_cast<Illusion::Material_t*>(GetResourceData());
 
-		if (ImGui::TreeNodeEx(Format::Get(u8"\uE253 Params##%u", m_Material->m_NameUID), IMGUI_TREENODE_OPEN_FLAGS))
+		if (ImGui::TreeNodeEx(u8"\uE253 Params", IMGUI_TREENODE_OPEN_FLAGS))
 		{
 			Illusion::MaterialParam_t* m_ParamTable = m_Material->GetTable();
 			for (uint32_t i = 0; m_Material->m_NumParams > i; ++i)
@@ -140,7 +141,7 @@ public:
 					if (m_Find != g_MaterialParamNameMap.end())
 						m_ParamName = (*m_Find).second->Get(m_Param->m_NameUID);
 					if (!m_ParamName)
-						m_ParamName = Format::Get("0x%X", m_Param->m_NameUID);
+						m_ParamName = Format::GetUIntHex(m_Param->m_NameUID);
 				}
 
 				Core_ImGui_TextSuffix(m_ParamStateName, m_ParamName, 200.f);
@@ -203,7 +204,7 @@ public:
 					}
 				}
 				if (!m_Selected)
-					m_Selected = Format::Get("0x%X", MaterialParamCtxItem.m_Ptr->m_NameUID);
+					m_Selected = Format::GetUIntHex(MaterialParamCtxItem.m_Ptr->m_NameUID);
 
 				if (ImGui::BeginCombo("##MaterialParamCtxItem_SelectList", m_Selected))
 				{

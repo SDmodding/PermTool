@@ -156,7 +156,7 @@ static std::unordered_map<uint32_t, ResourceTypeInfo_t> g_ResourceTypeMap =
 	{ RESOURCE_TYPE_RigInstance,					{ "RigInstance",						u8"\u0100" }},
 	{ RESOURCE_TYPE_RoadNetwork,					{ "RoadNetwork",						u8"\u0100" }},
 	{ RESOURCE_TYPE_SceneLayer,						{ "SceneLayer",							u8"\u0100" }},
-	{ RESOURCE_TYPE_SceneryGroup,					{ "SceneryGroup",						u8"\u0100" }},
+	{ RESOURCE_TYPE_SceneryGroup,					{ "SceneryGroup",						u8"\u0106" }},
 	{ RESOURCE_TYPE_ScreenParticleEmitterSettings,	{ "ScreenParticleEmitterSettings",		u8"\u0100" }},
 	{ RESOURCE_TYPE_SectionEffects,					{ "SectionEffects",						u8"\u0100" }},
 	{ RESOURCE_TYPE_SectionLayout,					{ "SectionLayout",						u8"\u0100" }},

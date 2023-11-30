@@ -17,6 +17,7 @@
 #include "Format.hxx"
 
 // Functions
+void Core_ImGui_ColorInfo(std::string p_Label, float* p_FloatColor);
 bool Core_ImGui_InputUInt(const char* p_Label, uint32_t* p_Value, uint32_t p_Step = 1, uint32_t p_StepFast = 100, ImGuiInputTextFlags p_Flags = ImGuiInputTextFlags_None);
 __inline bool Core_ImGui_InputHex(const char* p_Label, uint32_t* p_Value, uint32_t p_Step = 0x1, uint32_t p_StepFast = 0x100)
 {
@@ -26,9 +27,10 @@ void Core_ImGui_TextSuffix(const char* p_Prefix, const char* p_Suffix, float p_S
 bool Core_ImGui_ToolTipHover();
 bool Core_ImGui_RightClickItemPopup(const char* p_StrID = nullptr);
 bool Core_ImGui_RightClickItemPopupNoHover(const char* p_StrID);
-void Core_ImGui_ResourceHandleSelectable(const char* p_Name, uint32_t p_NameUID, uint32_t p_OwnerUID);
+void Core_ImGui_ResourceHandleSelectable(const char* p_Name, uint32_t p_NameUID);
 void Core_SelectResourceName(uint32_t p_NameUID);
 class CResourceData* Core_FindResourceByName(uint32_t p_NameUID);
+void Core_ConvertFloat4Color2UInt(float* p_Floats, uint8_t* p_UInt);
 
 // Global Classes
 #include "GClasses/Args.hxx"
@@ -42,6 +44,7 @@ class CResourceData* Core_FindResourceByName(uint32_t p_NameUID);
 // Symbols
 #include "Symbols/AlphaState.hxx"
 #include "Symbols/RasterState.hxx"
+#include "Symbols/Shader.hxx"
 
 // Classes
 #include "Classes/Perm/.Perm.hxx"
@@ -348,7 +351,7 @@ public:
 
     static bool Render_RemovePopup(CCore* p_Core)
     {
-        ImGui::TextWrapped("Are you sure you want to remove: '%s'?", p_Core->m_PermSelected->GetName());
+        ImGui::TextWrapped("Are you sure you want to remove: '%s'?", p_Core->m_PermSelected->GetResoruceName());
 
         float m_ButtonWidth = floorf(ImGui::GetContentRegionAvail().x * 0.5f) - 4.f;
 
@@ -413,11 +416,11 @@ public:
             if (!m_Perm->m_HasTreeNodeItems)
                 m_TreeNodeFlags |= ImGuiTreeNodeFlags_Leaf;
 
-            if (m_SelectResourceNameUID == m_ResourceData->m_NameUID)
+            bool m_ShouldSelectResource = (m_SelectResourceNameUID == m_ResourceData->m_NameUID);
+            if (m_ShouldSelectResource)
             {
                 m_PermSelected = m_Perm;
                 m_SelectResourceNameUID = UINT32_MAX;
-                ImGui::SetScrollHereY(0.f);
                 ImGui::SetNextItemOpen(true);
             }
 
@@ -425,6 +428,9 @@ public:
             std::string m_ResourceName = m_ResourceData->GetName();
             bool m_TreeNodeOpen = ImGui::TreeNodeEx(m_ResourceNodeID, m_TreeNodeFlags | ImGuiTreeNodeFlags_SpanAvailWidth, "%s %s", m_ResourceTypeInfo->m_Icon, m_ResourceName.c_str());
             ImGui::PushID(m_ResourceNodeID);
+
+            if (m_ShouldSelectResource)
+                ImGui::SetScrollHereY(0.f);
 
             if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen())
                 m_PermSelected = m_Perm;

@@ -16,7 +16,7 @@ public:
     {
         const char* m_Key = Dictionary::g_UILocalizationSymbols.Get(p_Key);
         if (!m_Key)
-            m_Key = Format::Get("0x%08X", p_Key);
+            m_Key = Format::GetUIntHex(p_Key);
 
         return m_Key;
     }

@@ -27,7 +27,7 @@ public:
 		char m_FilePath[MAX_PATH]; 
 		{
 			ZeroMemory(m_FilePath, sizeof(m_FilePath));
-			strncpy_s(m_FilePath, m_UIScreen->m_DebugName, sizeof(m_FilePath));
+			strncpy_s(m_FilePath, this->GetResoruceName(), sizeof(m_FilePath));
 		}
 
 		OPENFILENAMEA m_OpenFileName = { 0 };

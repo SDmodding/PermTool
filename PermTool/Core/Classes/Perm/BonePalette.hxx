@@ -12,9 +12,9 @@ public:
 	{
 		Illusion::BonePallete_t* m_BonePallete = reinterpret_cast<Illusion::BonePallete_t*>(GetResourceData());
 
-		Core_ImGui_TextSuffix("Count", Format::Get("%u", m_BonePallete->m_NumBones));
+		Core_ImGui_TextSuffix("Count", Format::GetUInt(m_BonePallete->m_NumBones));
 
-		if (ImGui::TreeNodeEx(Format::Get(u8"\uF03A List##%u", m_BonePallete->m_NameUID), IMGUI_TREENODE_FLAGS))
+		if (ImGui::TreeNodeEx(u8"\uF03A List", IMGUI_TREENODE_FLAGS))
 		{
 			auto m_BoneNameTable = m_BonePallete->GetBoneNameTable();
 			uint32_t* m_BoneUIDTable = m_BonePallete->GetBoneUIDTable();
@@ -23,8 +23,8 @@ public:
 				ImGui::BulletText((&m_BoneNameTable[i])->m_Str);
 				if (Core_ImGui_ToolTipHover())
 				{
-					Core_ImGui_TextSuffix("Index", Format::Get("%u", i), 80.f);
-					Core_ImGui_TextSuffix("NameUID", Format::Get("0x%X", m_BoneUIDTable[i]), 80.f);
+					Core_ImGui_TextSuffix("Index", Format::GetUInt(i), 80.f);
+					Core_ImGui_TextSuffix("NameUID", Format::GetUIntHex(m_BoneUIDTable[i]), 80.f);
 					ImGui::EndTooltip();
 				}
 			}

@@ -3,6 +3,9 @@
 // 3rdParty (Half-Float)
 #include "3rdParty/umHalf.h"
 
+// 3rdParty (TinyXML2)
+#include "3rdParty/tinyxml2.h"
+
 #include <iostream>
 #include <filesystem>
 #include <unordered_map>
@@ -18,7 +21,7 @@
 
 // Defines
 #define PROJECT_NAME        "Perm Tool"
-#define PROJECT_VERSION     "v0.2-a.0"
+#define PROJECT_VERSION     "v0.3-a.0"
 
 // Resources
 #include "resource.h"
@@ -132,8 +135,22 @@ namespace Render
                 ImGui::EndMenu();
             }
 
-            ImGui::SetCursorPosX(ImGui::GetContentRegionMax().x - 216.f);
-            if (ImGui::MenuItem(u8"\u01A0 GitHub Repo"))
+            ImGui::SetCursorPosX(ImGui::GetContentRegionMax().x - 266.f);
+            if (ImGui::MenuItem(u8"\u01A1 Patreon"))
+                ShellExecuteA(0, "open", "https://www.patreon.com/sneakyevil", 0, 0, SW_SHOWNORMAL);
+
+            if (Core_ImGui_ToolTipHover())
+            {
+                ImGui::Text("You can support this project via patreon.");
+                ImGui::SameLine();
+                ImGui::PushStyleColor(ImGuiCol_Text, IMGUI_COLOR_TEXT2);
+                ImGui::Text("(Click to open in browser)");
+                ImGui::PopStyleColor();
+
+                ImGui::EndTooltip();
+            }
+
+            if (ImGui::MenuItem(u8"\u01A0 GitHub"))
                 ShellExecuteA(0, "open", "https://github.com/SDmodding/PermTool", 0, 0, SW_SHOWNORMAL);
 
             if (Core_ImGui_ToolTipHover())
@@ -421,7 +438,7 @@ LRESULT WINAPI WndProc(HWND p_HWND, UINT p_Msg, WPARAM p_WParam, LPARAM p_LParam
     return DefWindowProcA(p_HWND, p_Msg, p_WParam, p_LParam);
 }
 
-const char* g_DebugPermFilePath = R"(C:\Program Files (x86)\Steam\steamapps\common\SleepingDogsDefinitiveEdition\Characters\Data\Characters_New\H_DefaultHair.perm.bin)";
+const char* g_DebugPermFilePath = R"(C:\Program Files (x86)\Steam\steamapps\common\SleepingDogsDefinitiveEdition\Game\Data\World\Game\Section\SD\AB_Warehouse01\AB_Warehouse01STD.perm.bin)";
 
 // Main
 int WINAPI WinMain(HINSTANCE p_Instance, HINSTANCE p_PrevInstance, char* p_CmdLine, int p_CmdShow)

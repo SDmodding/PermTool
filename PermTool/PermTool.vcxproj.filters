@@ -58,6 +58,9 @@
     <ClCompile Include="3rdParty\ImGui\imgui_widgets.cpp">
       <Filter>Project Files\3rdParty\ImGui</Filter>
     </ClCompile>
+    <ClCompile Include="3rdParty\tinyxml2.cpp">
+      <Filter>Project Files\3rdParty</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="3rdParty\ImGui\imconfig.h">
@@ -158,6 +161,15 @@
     </ClInclude>
     <ClInclude Include="Core\GClasses\Configuration.hxx">
       <Filter>Project Files\Core\GClasses</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Classes\Perm\SceneryGroup.hxx">
+      <Filter>Project Files\Core\Classes\Perm</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdParty\tinyxml2.h">
+      <Filter>Project Files\3rdParty</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Symbols\Shader.hxx">
+      <Filter>Project Files\Core\Symbols</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

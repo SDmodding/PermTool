@@ -153,6 +153,7 @@
     <ClCompile Include="3rdParty\ImGui\imgui_impl_win32.cpp" />
     <ClCompile Include="3rdParty\ImGui\imgui_tables.cpp" />
     <ClCompile Include="3rdParty\ImGui\imgui_widgets.cpp" />
+    <ClCompile Include="3rdParty\tinyxml2.cpp" />
     <ClCompile Include="main.cxx" />
   </ItemGroup>
   <ItemGroup>
@@ -165,12 +166,14 @@
     <ClInclude Include="3rdParty\ImGui\imstb_rectpack.h" />
     <ClInclude Include="3rdParty\ImGui\imstb_textedit.h" />
     <ClInclude Include="3rdParty\ImGui\imstb_truetype.h" />
+    <ClInclude Include="3rdParty\tinyxml2.h" />
     <ClInclude Include="3rdParty\umHalf.h" />
     <ClInclude Include="Core\Classes\Perm\BonePalette.hxx" />
     <ClInclude Include="Core\Classes\Perm\Buffer.hxx" />
     <ClInclude Include="Core\Classes\Perm\Dictionary\UILocalization.hxx" />
     <ClInclude Include="Core\Classes\Perm\Material.hxx" />
     <ClInclude Include="Core\Classes\Perm\ModelData.hxx" />
+    <ClInclude Include="Core\Classes\Perm\SceneryGroup.hxx" />
     <ClInclude Include="Core\Classes\Perm\Texture.hxx" />
     <ClInclude Include="Core\Classes\Perm\UILocalization.hxx" />
     <ClInclude Include="Core\Classes\Perm\UIScreen.hxx" />
@@ -186,6 +189,7 @@
     <ClInclude Include="Core\Helpers\UIScreen.hxx" />
     <ClInclude Include="Core\Symbols\AlphaState.hxx" />
     <ClInclude Include="Core\Symbols\RasterState.hxx" />
+    <ClInclude Include="Core\Symbols\Shader.hxx" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Resources\FontAwesome.hxx" />
     <ClInclude Include="Resources\PermToolIcons.hxx" />

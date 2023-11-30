@@ -181,17 +181,17 @@ public:
 		Illusion::Texture_t* m_Texture = reinterpret_cast<Illusion::Texture_t*>(GetResourceData());
 
 		static constexpr float m_SuffixStartX = 180.f;
-		Core_ImGui_TextSuffix("Width", Format::Get("%hu", m_Texture->m_Width), m_SuffixStartX);
-		Core_ImGui_TextSuffix("Height", Format::Get("%hu", m_Texture->m_Height), m_SuffixStartX);
-		Core_ImGui_TextSuffix("AlphaState", g_AlphaStateSymbolMap.Get(m_Texture->m_AlphaStateUID, Format::Get("0x%X", m_Texture->m_AlphaStateUID)), m_SuffixStartX);
+		Core_ImGui_TextSuffix("Width", Format::GetUInt16(m_Texture->m_Width), m_SuffixStartX);
+		Core_ImGui_TextSuffix("Height", Format::GetUInt16(m_Texture->m_Height), m_SuffixStartX);
+		Core_ImGui_TextSuffix("AlphaState", g_AlphaStateSymbolMap.Get(m_Texture->m_AlphaStateUID, Format::GetUIntHex(m_Texture->m_AlphaStateUID)), m_SuffixStartX);
 		Core_ImGui_TextSuffix("Aniso", GetAnisoName(m_Texture), m_SuffixStartX);
 		Core_ImGui_TextSuffix("Filter", GetFilterName(m_Texture), m_SuffixStartX);
 		Core_ImGui_TextSuffix("Format", GetFormatName(m_Texture), m_SuffixStartX);
 		Core_ImGui_TextSuffix("Type", GetTypeName(m_Texture), m_SuffixStartX);
-		Core_ImGui_TextSuffix("Num Mipmaps", Format::Get("%hu", static_cast<uint16_t>(m_Texture->m_NumMipMaps)), m_SuffixStartX);
+		Core_ImGui_TextSuffix("Num Mipmaps", Format::GetUInt16(static_cast<uint16_t>(m_Texture->m_NumMipMaps)), m_SuffixStartX);
 		Core_ImGui_TextSuffix("Mipmap Bias Preset", GetMipmapBiasPresetName(m_Texture), m_SuffixStartX);
 
-		if (ImGui::TreeNodeEx(Format::Get(u8"\uF024 Flags##%u", m_Texture->m_NameUID), IMGUI_TREENODE_FLAGS))
+		if (ImGui::TreeNodeEx(u8"\uF024 Flags", IMGUI_TREENODE_FLAGS))
 		{
 			for (auto& m_Pair : g_FlagsList)
 			{
@@ -202,7 +202,7 @@ public:
 			ImGui::TreePop();
 		}
 		
-		if (ImGui::TreeNodeEx(Format::Get(u8"\uF0C7 Data Info (Temp File)##%u", m_Texture->m_NameUID), IMGUI_TREENODE_FLAGS))
+		if (ImGui::TreeNodeEx(u8"\uF0C7 Data Info (Temp File)", IMGUI_TREENODE_FLAGS))
 		{
 			Core_ImGui_TextSuffix("Size", Format::Get("%u (0x%X)", m_Texture->m_ImageDataByteSize, m_Texture->m_ImageDataByteSize), m_SuffixStartX);
 			Core_ImGui_TextSuffix("File Offset", Format::Get("%llu (0x%lX)", m_Texture->m_ImageDataPosition, m_Texture->m_ImageDataPosition), m_SuffixStartX);
@@ -238,11 +238,11 @@ public:
 				m_Texture->m_NumMipMaps = static_cast<uint8_t>(m_NumMipmaps);
 
 			const char* m_AlphaStateName = g_AlphaStateSymbolMap.Get(m_Texture->m_AlphaStateUID);
-			if (ImGui::BeginCombo("AlphaState", (m_AlphaStateName ? m_AlphaStateName : Format::Get("0x%X", m_Texture->m_AlphaStateUID))))
+			if (ImGui::BeginCombo("AlphaState", (m_AlphaStateName ? m_AlphaStateName : Format::GetUIntHex(m_Texture->m_AlphaStateUID))))
 			{
 				auto m_Items = g_AlphaStateSymbolMap.GetSortedVector();
 				if (!m_AlphaStateName)
-					m_Items.insert(m_Items.begin(), { m_Texture->m_AlphaStateUID, Format::Get("0x%X", m_Texture->m_AlphaStateUID) });
+					m_Items.insert(m_Items.begin(), { m_Texture->m_AlphaStateUID, Format::GetUIntHex(m_Texture->m_AlphaStateUID) });
 
 				for (auto& m_Pair : m_Items)
 				{
