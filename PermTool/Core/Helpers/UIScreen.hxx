@@ -8,6 +8,7 @@ namespace Helper
 		{
 			eScribeRes_OK = 0,
 			eScribeRes_IOError,
+			eScribeRes_IOWriteError,
 			eScribeRes_InvalidFileHeader,
 			eScribeRes_InvalidFlashSignature,
 			eScribeRes_InvalidFlashVersion
@@ -18,6 +19,8 @@ namespace Helper
 			{
 			case eScribeRes_IOError:
 				return "Couldn't open/read file.";
+			case eScribeRes_IOWriteError:
+				return "Couldn't open/write file.";
 			case eScribeRes_InvalidFileHeader:
 				return "File has invalid header.";
 			case eScribeRes_InvalidFlashSignature:
@@ -96,9 +99,39 @@ namespace Helper
 				return eScribeRes_OK;
 			}
 
-			void CMode_Scribe(const char* p_SWFPath)
+			void CMode_Scribe(const char* p_FilePath, int p_ArgIndex)
 			{
+				std::string m_ScreenName;
+				if (const char* m_ScreenNamePtr = g_Args.GetValue(p_ArgIndex))
+					m_ScreenName = m_ScreenNamePtr;
+				else
+					m_ScreenName = std::filesystem::path(p_FilePath).stem().string();
 
+				std::string m_OutputPath = std::filesystem::path(p_FilePath).remove_filename().string() + m_ScreenName + ".bin";
+
+				UFG::UIScreen_t* m_UIScreen = nullptr;
+				eScribeRes m_Res = Internal::Scribe(&m_UIScreen, p_FilePath, m_ScreenName.c_str());
+				if (m_Res != eScribeRes_OK)
+				{
+					printf("[ ERROR ] %s\n", GetResultStr(m_Res));
+					return;
+				}
+				
+				FILE* m_File = fopen(m_OutputPath.c_str(), "wb");
+				if (m_File)
+				{
+					fwrite(m_UIScreen, static_cast<size_t>(m_UIScreen->GetEntrySize()), 1, m_File);
+					fclose(m_File);
+				}
+
+				free(m_UIScreen);
+				if (!m_File)
+				{
+					printf("[ ERROR ] %s\n", GetResultStr(eScribeRes_IOWriteError));
+					return;
+				}
+
+				printf("Successfully output UIScreen at '%s'.\n", m_OutputPath.c_str());
 			}
 		}
 

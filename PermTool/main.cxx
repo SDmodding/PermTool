@@ -21,7 +21,7 @@
 
 // Defines
 #define PROJECT_NAME        "Perm Tool"
-#define PROJECT_VERSION     "v0.3-a.0"
+#define PROJECT_VERSION     "v0.3-a.1"
 
 // Resources
 #include "resource.h"

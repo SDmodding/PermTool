@@ -607,7 +607,22 @@ public:
 
     void CMode_Options()
     {
+        printf("\n");
 
+        printf("[UIScreen]:\n");
+        {
+            printf("-scribescreen <name:optional>\n");
+        }
+    }
+
+    void CMode_Handle(const char* p_FilePath)
+    {
+        int m_ArgIndex;
+        if ((m_ArgIndex = g_Args.GetIndex("scribescreen")) != -1)
+            return Helper::UIScreen::Internal::CMode_Scribe(p_FilePath, m_ArgIndex);
+
+        printf("[ ! ] No option has been set.\n");
+        CMode_Options();
     }
 
     // Callback from WinMain when running in CMode
@@ -627,6 +642,16 @@ public:
             CMode_Options();
             return;
         }
+
+        const char* m_FilePath = g_Args.GetValue(1);
+        if (!std::filesystem::exists(m_FilePath))
+        {
+            printf("[ ! ] Input file doesn't seem to exist!\n");
+            printf("- Make sure you used params in this order: '?cmode infile -options'.\n");
+            return;
+        }
+
+        CMode_Handle(m_FilePath);
     }
 };
 CCore g_Core;
