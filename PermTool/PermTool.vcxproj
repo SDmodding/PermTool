@@ -145,6 +145,9 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>DebugFastLink</GenerateDebugInformation>
     </Link>
+    <PostBuildEvent>
+      <Command>call "$(SolutionDir)upx.exe" "$(TargetPath)"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="3rdParty\ImGui\imgui.cpp" />
