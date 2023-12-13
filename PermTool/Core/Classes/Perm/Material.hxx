@@ -7,14 +7,18 @@ CQSymbolMap g_MaterialParamSymbolMap = {{
 	"texNoise",
 	"texNormal",
 	"texSpecular",
-	"iAlphaState", "iRasterState", "iShader", "iTexture"
+	"iAlphaState", "iRasterState", "iShader", "iTexture",
+	"sbDepthBiasSortLayer", "sbSpecularLook", "sbTextureAnim",
 }};
 
 std::unordered_map<uint32_t, CQSymbolMap*> g_MaterialParamNameMap =
 {
-	{ SDK::StringHash32("iAlphaState"), &g_AlphaStateSymbolMap },
-	{ SDK::StringHash32("iRasterState"), &g_RasterStateSymbolMap },
-	{ SDK::StringHash32("iShader"), &g_ShaderSymbolMap }
+	{ 0xEB98748F, &g_AlphaStateSymbolMap }, // iAlphaState
+	{ 0xC0C265E6, &g_RasterStateSymbolMap }, // iRasterState
+	{ 0x5C19C934, &g_ShaderSymbolMap }, // iShader
+	{ 0xF173D303, &g_DepthBiasSortLayerSymbolMap }, // sbDepthBiasSortLayer
+	{ 0xEA270604, &g_SpecularLookSymbolMap }, // sbSpecularLook
+	{ 0xB2F5D3F2, &g_TextureAnimSymbolMap } // sbTextureAnim
 };
 
 struct MaterialParamAdd_t
@@ -140,11 +144,9 @@ public:
 					auto m_Find = g_MaterialParamNameMap.find(m_Param->m_StateParam.m_NameUID);
 					if (m_Find != g_MaterialParamNameMap.end())
 						m_ParamName = (*m_Find).second->Get(m_Param->m_NameUID);
-					if (!m_ParamName)
-						m_ParamName = Format::GetUIntHex(m_Param->m_NameUID);
 				}
 
-				Core_ImGui_TextSuffix(m_ParamStateName, m_ParamName, 200.f);
+				Core_ImGui_ResourceHandleSelectable(m_ParamStateName, m_Param->m_NameUID, 0.f, m_ParamName);
 			}
 
 			ImGui::TreePop();

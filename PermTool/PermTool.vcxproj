@@ -188,8 +188,11 @@
     <ClInclude Include="Core\GClasses\PopupHandler.hxx" />
     <ClInclude Include="Core\Helpers\UIScreen.hxx" />
     <ClInclude Include="Core\Symbols\AlphaState.hxx" />
+    <ClInclude Include="Core\Symbols\DepthBiasSortLayer.hxx" />
     <ClInclude Include="Core\Symbols\RasterState.hxx" />
     <ClInclude Include="Core\Symbols\Shader.hxx" />
+    <ClInclude Include="Core\Symbols\SpecularLook.hxx" />
+    <ClInclude Include="Core\Symbols\TextureAnim.hxx" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Resources\FontAwesome.hxx" />
     <ClInclude Include="Resources\PermToolIcons.hxx" />

@@ -58,13 +58,14 @@ bool Core_ImGui_ToolTipHover()
     return (ImGui::IsItemHovered(ImGuiHoveredFlags_ForTooltip) && ImGui::BeginTooltipEx(ImGuiTooltipFlags_OverridePrevious, ImGuiWindowFlags_None));
 }
 
-void Core_ImGui_ResourceHandleSelectable(const char* p_Name, uint32_t p_NameUID)
+void Core_ImGui_ResourceHandleSelectable(const char* p_Name, uint32_t p_NameUID, float p_LineOffset, const char* p_ResourceName)
 {
-    if (!p_NameUID)
+    if (!p_NameUID) {
         return;
+    }
 
     ImGui::Text("%s:", p_Name);
-    ImGui::SameLine();
+    ImGui::SameLine(p_LineOffset);
 
     ImGui::PushStyleColor(ImGuiCol_Text, IMGUI_COLOR_TEXT2);
 
@@ -80,10 +81,17 @@ void Core_ImGui_ResourceHandleSelectable(const char* p_Name, uint32_t p_NameUID)
         ImGui::SetItemTooltip(m_ResourceName.c_str());
         return;
     }
-    else
-        ImGui::Text("0x%X", p_NameUID);
+    
+    if (p_ResourceName) 
+    {
+        ImGui::Text(p_ResourceName);
+        ImGui::PopStyleColor();
 
-
+        ImGui::SetItemTooltip(p_ResourceName);
+        return;
+    }
+    
+    ImGui::Text("0x%X", p_NameUID);
     ImGui::PopStyleColor();
 }
 

@@ -27,7 +27,7 @@ void Core_ImGui_TextSuffix(const char* p_Prefix, const char* p_Suffix, float p_S
 bool Core_ImGui_ToolTipHover();
 bool Core_ImGui_RightClickItemPopup(const char* p_StrID = nullptr);
 bool Core_ImGui_RightClickItemPopupNoHover(const char* p_StrID);
-void Core_ImGui_ResourceHandleSelectable(const char* p_Name, uint32_t p_NameUID);
+void Core_ImGui_ResourceHandleSelectable(const char* p_Name, uint32_t p_NameUID, float p_LineOffset = 0.f, const char* p_ResourceName = nullptr);
 void Core_SelectResourceName(uint32_t p_NameUID);
 class CResourceData* Core_FindResourceByName(uint32_t p_NameUID);
 void Core_ConvertFloat4Color2UInt(float* p_Floats, uint8_t* p_UInt);
@@ -43,8 +43,11 @@ void Core_ConvertFloat4Color2UInt(float* p_Floats, uint8_t* p_UInt);
 
 // Symbols
 #include "Symbols/AlphaState.hxx"
+#include "Symbols/DepthBiasSortLayer.hxx"
 #include "Symbols/RasterState.hxx"
 #include "Symbols/Shader.hxx"
+#include "Symbols/SpecularLook.hxx"
+#include "Symbols/TextureAnim.hxx"
 
 // Classes
 #include "Classes/Perm/.Perm.hxx"

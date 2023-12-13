@@ -21,7 +21,7 @@
 
 // Defines
 #define PROJECT_NAME        "Perm Tool"
-#define PROJECT_VERSION     "v0.3-a.1"
+#define PROJECT_VERSION     "v0.3-a.2"
 
 // Resources
 #include "resource.h"
@@ -438,7 +438,7 @@ LRESULT WINAPI WndProc(HWND p_HWND, UINT p_Msg, WPARAM p_WParam, LPARAM p_LParam
     return DefWindowProcA(p_HWND, p_Msg, p_WParam, p_LParam);
 }
 
-const char* g_DebugPermFilePath = R"(C:\Program Files (x86)\Steam\steamapps\common\SleepingDogsDefinitiveEdition\Game\Data\World\Game\Section\SD\AB_Warehouse01\AB_Warehouse01STD.perm.bin)";
+const char* g_DebugPermFilePath = R"(C:\Program Files (x86)\Steam\steamapps\common\SleepingDogsDefinitiveEdition\Game\Data\World\Game\Zone\SD\HK\HK.perm.bin)";
 
 // Main
 int WINAPI WinMain(HINSTANCE p_Instance, HINSTANCE p_PrevInstance, char* p_CmdLine, int p_CmdShow)

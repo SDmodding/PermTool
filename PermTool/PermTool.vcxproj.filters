@@ -171,6 +171,15 @@
     <ClInclude Include="Core\Symbols\Shader.hxx">
       <Filter>Project Files\Core\Symbols</Filter>
     </ClInclude>
+    <ClInclude Include="Core\Symbols\DepthBiasSortLayer.hxx">
+      <Filter>Project Files\Core\Symbols</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Symbols\TextureAnim.hxx">
+      <Filter>Project Files\Core\Symbols</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Symbols\SpecularLook.hxx">
+      <Filter>Project Files\Core\Symbols</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="PermTool.rc">

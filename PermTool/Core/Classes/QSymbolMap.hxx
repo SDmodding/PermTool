@@ -17,6 +17,11 @@ public:
 		}
 	}
 
+	CQSymbolMap(std::unordered_map<uint32_t, const char*> p_Map)
+	{
+		m_Map = p_Map;
+	}
+
 	static bool Compare(std::pair<uint32_t, const char*>& p_PairA, std::pair<uint32_t, const char*>& p_PairB)
 	{
 		return (std::string(p_PairB.second) > std::string(p_PairA.second));
